@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Pemesanan - Smart Meeting BPSDM ESDM</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        esdmNavy: '#1A365D',
+                        esdmYellow: '#FEDD00',
+                        esdmDark: '#2B2B2B',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- CSS PRINT CLEAN & NO OVERLAP -->
+    <style>
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            body {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            header, main, footer, #cancelModal {
+                display: none !important;
+            }
+            #printableTicketArea {
+                display: block !important;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            #ticketPdfContent {
+                box-shadow: none !important;
+                border: 1px solid #CBD5E1 !important;
+                width: 100% !important;
+                margin: 0 auto !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#F8FAFC] font-sans text-esdmDark min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER NAVIGATION BAR -->
+    <header class="bg-esdmNavy text-white px-10 py-4 flex justify-between items-center shadow-md">
+        <div class="flex items-center gap-3">
+            <img src="img/logo-esdm.png" alt="Logo ESDM" class="w-9 h-9 object-contain">
+            <div>
+                <h1 class="text-sm font-bold tracking-wide">Smart Meeting BPSDM ESDM</h1>
+                <p id="portalBadge" class="text-[10px] text-gray-300 tracking-wider uppercase">Portal Internal DEN</p>
+            </div>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+            <a href="beranda.html" class="text-gray-300 hover:text-white transition-colors">Dashboard Utama</a>
+            <a href="riwayat.html" class="text-esdmYellow border-b-2 border-esdmYellow pb-1">Riwayat Pemesanan</a>
+            <a href="profil.html" class="text-gray-300 hover:text-white transition-colors">Pengaturan Akun</a>
+        </nav>
+
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2.5 pl-2 border-l border-blue-900/50">
+                <img id="userAvatarHeader" src="https://ui-avatars.com/api/?name=User&background=CBD5E1&color=475569" alt="Foto Profil" class="w-8 h-8 rounded-full object-cover border border-esdmYellow">
+                <div class="text-left">
+                    <p id="userNameHeader" class="text-xs font-bold leading-tight">Amalia Putri</p>
+                    <p id="userRoleBadge" class="text-[10px] text-esdmYellow font-medium">Pegawai Internal DEN</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA RIWAYAT -->
+    <main class="max-w-7xl w-full mx-auto px-8 py-8 flex-grow">
+        
+        <div class="mb-8">
+            <h1 class="text-xl font-bold text-esdmNavy">Riwayat Pemesanan Ruang Rapat</h1>
+            <p class="text-xs text-gray-500">Daftar pengajuan reservasi, status persetujuan, dan opsi pembatalan.</p>
+        </div>
+
+        <!-- TAB FILTER STATUS -->
+        <div class="flex items-center gap-3 mb-6 text-xs font-semibold">
+            <button onclick="filterStatus('semua')" id="tabSemua" class="px-4 py-2 rounded-xl bg-esdmNavy text-white shadow-sm transition-all">Semua Pemesanan</button>
+            <button onclick="filterStatus('disetujui')" id="tabDisetujui" class="px-4 py-2 rounded-xl bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all">Disetujui</button>
+            <button onclick="filterStatus('dibatalkan')" id="tabDibatalkan" class="px-4 py-2 rounded-xl bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all">Dibatalkan</button>
+        </div>
+
+        <!-- DAFTAR KARTU RIWAYAT -->
+        <div class="space-y-4">
+            <!-- Item 1 -->
+            <div class="item-row status-disetujui bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between md:items-center gap-4">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg flex-shrink-0">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-mono text-xs font-bold text-esdmNavy">#SM-2026-0928</span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">Disetujui</span>
+                        </div>
+                        <h3 class="font-bold text-esdmNavy text-sm">Ruang 4.1 Cendrawasih (Lantai 4)</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">Rapat Koordinasi Evaluasi Program Kerja Q1</p>
+                        <p class="text-[11px] text-gray-400 mt-1"><i class="fa-regular fa-clock mr-1"></i>05 Maret 2026 | 08:00 - 10:00 WIB</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 border-t md:border-t-0 pt-3 md:pt-0 border-gray-100">
+                    <button onclick="printTicket('#SM-2026-0928', 'Ruang 4.1 Cendrawasih', 'Lantai 4', 'Rapat Koordinasi Evaluasi Program Kerja Q1', '05 Maret 2026', '08:00 - 10:00 WIB', '15 Orang')" class="bg-esdmYellow hover:bg-yellow-400 text-esdmNavy font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-colors shadow-sm">
+                        <i class="fa-solid fa-file-pdf"></i> Unduh E-Ticket
+                    </button>
+                    <button onclick="openCancelModal('#SM-2026-0928', 'Ruang 4.1 Cendrawasih', '05 Maret 2026')" class="bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-colors border border-red-200">
+                        Batalkan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="item-row status-disetujui bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between md:items-center gap-4">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg flex-shrink-0">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-mono text-xs font-bold text-esdmNavy">#SM-2026-0811</span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">Disetujui</span>
+                        </div>
+                        <h3 class="font-bold text-esdmNavy text-sm">Ruang 5.1 Dewan Utama (Lantai 5)</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">Sidang Pleno Anggota Dewan Energi Nasional</p>
+                        <p class="text-[11px] text-gray-400 mt-1"><i class="fa-regular fa-clock mr-1"></i>12 Maret 2026 | 13:00 - 16:00 WIB</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 border-t md:border-t-0 pt-3 md:pt-0 border-gray-100">
+                    <button onclick="printTicket('#SM-2026-0811', 'Ruang 5.1 Dewan Utama', 'Lantai 5', 'Sidang Pleno Anggota Dewan Energi Nasional', '12 Maret 2026', '13:00 - 16:00 WIB', '80 Orang')" class="bg-esdmYellow hover:bg-yellow-400 text-esdmNavy font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-colors shadow-sm">
+                        <i class="fa-solid fa-file-pdf"></i> Unduh E-Ticket
+                    </button>
+                    <button onclick="openCancelModal('#SM-2026-0811', 'Ruang 5.1 Dewan Utama', '12 Maret 2026')" class="bg-red-50 hover:bg-red-100 text-red-600 font-semibold px-4 py-2 rounded-xl text-xs flex items-center gap-1.5 transition-colors border border-red-200">
+                        Batalkan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- MODAL PEMBATALAN RESERVASI -->
+    <div id="cancelModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+            <h3 class="text-base font-bold text-esdmNavy flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation text-red-500"></i> Konfirmasi Pembatalan
+            </h3>
+            <p id="cancelModalText" class="text-xs text-gray-600">Apakah Anda yakin ingin membatalkan reservasi ini?</p>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Alasan Pembatalan <span class="text-red-500">*</span></label>
+                <textarea id="cancelReason" rows="3" placeholder="Contoh: Perubahan jadwal dari pimpinan" class="w-full border border-gray-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-esdmNavy"></textarea>
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="closeCancelModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl text-xs font-semibold hover:bg-gray-200">Tutup</button>
+                <button onclick="submitCancellation(event)" class="px-4 py-2 bg-red-600 text-white rounded-xl text-xs font-semibold hover:bg-red-700">Ya, Batalkan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEMPLATE E-TICKET A4 RESMI -->
+    <div id="printableTicketArea" style="display: none;">
+        <div id="ticketPdfContent" class="bg-white text-esdmDark p-8 rounded-xl border border-gray-200 text-left shadow-md mx-auto" style="width: 210mm; min-height: 297mm; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+            
+            <div class="flex justify-between items-center border-b-2 border-esdmNavy pb-5 mb-6">
+                <div class="flex items-center gap-4">
+                    <img src="img/logo-esdm.png" class="w-14 h-14 object-contain">
+                    <div>
+                        <h2 class="text-base font-bold text-esdmNavy uppercase tracking-wider">KEMENTERIAN ENERGI DAN SUMBER DAYA MINERAL</h2>
+                        <p class="text-xs font-semibold text-gray-700">BADAN PENGEMBANGAN SUMBER DAYA MANUSIA ESDM</p>
+                        <p class="text-[10px] text-gray-500">Sistem Informasi Layanan Smart Meeting & Reservasi Ruang Rapat</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs border border-emerald-300">
+                        ● DISETUJUI
+                    </span>
+                    <p class="text-[10px] text-gray-400 mt-1">Status Sistem: Otomatis Verified</p>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border-l-4 border-esdmNavy p-4 mb-6 flex justify-between items-center rounded-r-lg">
+                <div>
+                    <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">BUKTI RESERVASI RESMI (E-TICKET)</p>
+                    <h3 id="pdfCode" class="text-xl font-extrabold text-esdmNavy">#SM-2026-0928</h3>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] text-gray-500">Tanggal Diterbitkan:</p>
+                    <p class="text-xs font-bold text-gray-800">05 Maret 2026</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6 mb-6 text-xs">
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
+                    <h4 class="font-bold text-esdmNavy text-xs border-b border-gray-200 pb-1.5 uppercase tracking-wide">
+                        <i class="fa-solid fa-user-gear mr-1 text-esdmYellow"></i> Informasi Pemohon
+                    </h4>
+                    <div class="flex justify-between py-1"><span class="text-gray-500">Nama Lengkap:</span> <span id="pdfApplicantName" class="font-bold text-gray-800">Amalia Putri</span></div>
+                    <div class="flex justify-between py-1"><span class="text-gray-500">Unit / Instansi:</span> <span id="pdfApplicantUnit" class="font-semibold text-gray-800">Dewan Energi Nasional (DEN)</span></div>
+                    <div class="flex justify-between py-1"><span class="text-gray-500">Jabatan:</span> <span id="pdfApplicantPos" class="font-semibold text-gray-800">Staf Analis Kebijakan</span></div>
+                    <div class="flex justify-between py-1"><span class="text-gray-500">Kontak Email:</span> <span id="pdfApplicantEmail" class="font-semibold text-gray-800">amalia@esdm.go.id</span></div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
+                    <h4 class="font-bold text-esdmNavy text-xs border-b border-gray-200 pb-1.5 uppercase tracking-wide">
+                        <i class="fa-solid fa-location-dot mr-1 text-esdmYellow"></i> Detail Lokasi & Ruangan
+                    </h4>
+                    <div class="flex justify-between py-1"><span class="text-gray-500">Nama Ruangan:</span> <span id="pdfRoomName" class="font-bold text-esdmNavy">Ruang 4.1 Cendrawasih</span></div>
+                    <div class="flex justify-between py-1"><span class="text-gray-500">Lantai Gedung:</span> <span id="pdfFloor" class="font-semibold text-gray-800">Lantai 4</span></div>
+                    <div class="flex justify-between py-1"><span class="text-gray-500">Kapasitas Maksimal:</span> <span id="pdfCap" class="font-semibold text-gray-800">15 Orang</span></div>
+                </div>
+            </div>
+
+            <div class="mb-6 text-xs">
+                <h4 class="font-bold text-esdmNavy text-xs mb-3 uppercase tracking-wide">
+                    <i class="fa-solid fa-calendar-check mr-1 text-esdmYellow"></i> Rincian Waktu & Agenda Acara
+                </h4>
+                <table class="w-full border-collapse border border-gray-200 rounded-lg overflow-hidden">
+                    <thead>
+                        <tr class="bg-esdmNavy text-white text-left font-semibold">
+                            <th class="p-3 border border-gray-300">Agenda / Subjek Rapat</th>
+                            <th class="p-3 border border-gray-300">Tanggal Pelaksanaan</th>
+                            <th class="p-3 border border-gray-300">Durasi Jam</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white text-gray-800 font-medium">
+                            <td id="pdfAgenda" class="p-3 border border-gray-200 font-bold">Rapat Koordinasi Evaluasi Program Kerja Q1</td>
+                            <td id="pdfDate" class="p-3 border border-gray-200">05 Maret 2026</td>
+                            <td id="pdfTime" class="p-3 border border-gray-200 font-bold text-esdmNavy">08:00 - 10:00 WIB</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="bg-yellow-50/70 border border-yellow-200 rounded-xl p-4 text-[11px] text-yellow-900 mb-8 space-y-1.5">
+                <p class="font-bold flex items-center gap-1.5 text-yellow-950">
+                    <i class="fa-solid fa-circle-exclamation text-yellow-600"></i> Ketentuan Penggunaan Ruang Rapat BPSDM ESDM:
+                </p>
+                <ul class="list-disc list-inside space-y-1 pl-1 text-gray-700">
+                    <li>Harap hadir 10 menit sebelum waktu rapat dimulai.</li>
+                    <li>Tunjukkan dokumen E-Ticket ini (digital/cetak) kepada petugas pengelola gedung atau teknisi di lokasi.</li>
+                    <li>Pastikan seluruh fasilitas (Touchscreen TV, Microphones, AC) dimatikan kembali setelah penggunaan selesai.</li>
+                </ul>
+            </div>
+
+            <div class="pt-4 border-t border-gray-200 grid grid-cols-2 gap-8 text-xs text-center mt-auto">
+                <div>
+                    <p class="text-gray-500 mb-8">Petugas Pengelola Gedung BPSDM ESDM,</p>
+                    <p class="font-bold text-esdmNavy underline">Tim Layanan Internal BPSDM</p>
+                    <p class="text-[10px] text-gray-400">Verifikasi Otomatis Sistem Smart Meeting</p>
+                </div>
+                <div>
+                    <p class="text-gray-500 mb-8">Pemohon / Penanggung Jawab Agenda,</p>
+                    <p id="pdfSigName" class="font-bold text-esdmNavy underline">Amalia Putri</p>
+                    <p id="pdfSigUnit" class="text-[10px] text-gray-400">Sekretariat DEN</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-gray-100 px-10 py-6 text-center text-xs text-gray-500 flex justify-between items-center">
+        <p>Badan Pengembangan Sumber Daya Manusia ESDM</p>
+        <p>© 2026 Smart Meeting BPSDM ESDM. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let selectedCancelCode = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedName = localStorage.getItem('profileName') || 'Amalia Putri';
+            const savedAvatar = localStorage.getItem('customAvatar');
+            const role = localStorage.getItem('userRole') || 'internal';
+
+            const navName = document.getElementById('userNameHeader');
+            if (navName) navName.innerText = savedName;
+
+            const navImg = document.getElementById('userAvatarHeader');
+            const unknownAvatarUrl = "https://ui-avatars.com/api/?name=" + encodeURIComponent(savedName) + "&background=CBD5E1&color=475569";
+            
+            if (navImg) {
+                if (!savedAvatar || savedAvatar === 'none') {
+                    navImg.src = unknownAvatarUrl;
+                } else {
+                    navImg.src = savedAvatar;
+                }
+            }
+
+            const portalBadge = document.getElementById('portalBadge');
+            const userRoleBadge = document.getElementById('userRoleBadge');
+            if (role === 'eksternal') {
+                if (portalBadge) portalBadge.innerText = 'Portal Eksternal ESDM';
+                if (userRoleBadge) userRoleBadge.innerText = 'Pengguna Eksternal';
+            } else {
+                if (portalBadge) portalBadge.innerText = 'Portal Internal DEN';
+                if (userRoleBadge) userRoleBadge.innerText = 'Pegawai Internal DEN';
+            }
+        });
+
+        function filterStatus(status) {
+            const rows = document.querySelectorAll('.item-row');
+            const btnSemua = document.getElementById('tabSemua');
+            const btnDisetujui = document.getElementById('tabDisetujui');
+            const btnDibatalkan = document.getElementById('tabDibatalkan');
+
+            btnSemua.className = "px-4 py-2 rounded-xl bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all";
+            btnDisetujui.className = "px-4 py-2 rounded-xl bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all";
+            btnDibatalkan.className = "px-4 py-2 rounded-xl bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 transition-all";
+
+            if(status === 'semua') {
+                btnSemua.className = "px-4 py-2 rounded-xl bg-esdmNavy text-white shadow-sm transition-all";
+                rows.forEach(r => r.classList.remove('hidden'));
+            } else if(status === 'disetujui') {
+                btnDisetujui.className = "px-4 py-2 rounded-xl bg-esdmNavy text-white shadow-sm transition-all";
+                rows.forEach(r => {
+                    r.classList.contains('status-disetujui') ? r.classList.remove('hidden') : r.classList.add('hidden');
+                });
+            } else if(status === 'dibatalkan') {
+                btnDibatalkan.className = "px-4 py-2 rounded-xl bg-esdmNavy text-white shadow-sm transition-all";
+                rows.forEach(r => {
+                    r.classList.contains('status-dibatalkan') ? r.classList.remove('hidden') : r.classList.add('hidden');
+                });
+            }
+        }
+
+        function openCancelModal(code, room, date) {
+            selectedCancelCode = code;
+            document.getElementById('cancelModalText').innerText = `Apakah Anda yakin ingin membatalkan reservasi ${room} pada tanggal ${date} (${code})?`;
+            document.getElementById('cancelModal').classList.remove('hidden');
+        }
+
+        function closeCancelModal() {
+            document.getElementById('cancelModal').classList.add('hidden');
+            document.getElementById('cancelReason').value = '';
+        }
+
+        function submitCancellation(event) {
+            event.preventDefault();
+            closeCancelModal();
+            filterStatus('semua');
+        }
+
+        function printTicket(code, room, floor, agenda, date, time, cap) {
+            const savedName = localStorage.getItem('profileName') || 'Amalia Putri';
+            const savedUnit = localStorage.getItem('profileUnit') || 'Sekretariat DEN';
+            const savedPos = localStorage.getItem('profilePos') || 'Staf Analis Kebijakan';
+            const savedEmail = localStorage.getItem('profileEmail') || 'amalia@esdm.go.id';
+
+            document.getElementById('pdfCode').innerText = code;
+            document.getElementById('pdfRoomName').innerText = room;
+            document.getElementById('pdfFloor').innerText = floor;
+            document.getElementById('pdfAgenda').innerText = agenda;
+            document.getElementById('pdfDate').innerText = date;
+            document.getElementById('pdfTime').innerText = time;
+            document.getElementById('pdfCap').innerText = cap;
+
+            document.getElementById('pdfApplicantName').innerText = savedName;
+            document.getElementById('pdfApplicantUnit').innerText = savedUnit;
+            document.getElementById('pdfApplicantPos').innerText = savedPos;
+            document.getElementById('pdfApplicantEmail').innerText = savedEmail;
+
+            document.getElementById('pdfSigName').innerText = savedName;
+            document.getElementById('pdfSigUnit').innerText = savedUnit;
+
+            setTimeout(() => {
+                window.print();
+            }, 100);
+        }
+    </script>
+</body>
+</html>

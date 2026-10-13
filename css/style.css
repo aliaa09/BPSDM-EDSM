@@ -1,0 +1,7 @@
+/* Pengaturan dasar font dan warna latar belakang aplikasi */
+body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: #F8FAFC; 
+}
+
+/* Kamu bisa menambahkan custom CSS lainnya di sini nanti kalau butuh */

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Utama - Smart Meeting BPSDM ESDM</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        esdmNavy: '#1A365D',
+                        esdmYellow: '#FEDD00',
+                        esdmDark: '#2B2B2B',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#F8FAFC] font-sans text-esdmDark min-h-screen flex flex-col">
+
+    <!-- HEADER NAVIGATION BAR -->
+    <header class="bg-esdmNavy text-white px-10 py-4 flex justify-between items-center shadow-md">
+        <!-- Logo & Portal Title -->
+        <div class="flex items-center gap-3">
+            <img src="img/logo-esdm.png" alt="Logo ESDM" class="w-9 h-9 object-contain">
+            <div>
+                <h1 class="text-sm font-bold tracking-wide">Smart Meeting BPSDM ESDM</h1>
+                <p id="portalBadge" class="text-[10px] text-gray-300 tracking-wider uppercase">Portal Internal DEN</p>
+            </div>
+        </div>
+
+        <!-- Menu Navigasi Tengah -->
+        <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+            <a href="beranda.html" class="text-esdmYellow border-b-2 border-esdmYellow pb-1">Dashboard Utama</a>
+            <a href="riwayat.html" class="text-gray-300 hover:text-white transition-colors">Riwayat Pemesanan</a>
+            <a href="profil.html" class="text-gray-300 hover:text-white transition-colors">Pengaturan Akun</a>
+        </nav>
+
+        <!-- Profil Kanan -->
+        <div class="flex items-center gap-4">
+            <button onclick="toggleRoleDemo()" class="text-[10px] bg-white/10 hover:bg-white/20 px-2.5 py-1 rounded border border-white/20 text-esdmYellow">
+                <i class="fa-solid fa-repeat mr-1"></i> Switch Akses
+            </button>
+
+            <div class="flex items-center gap-2.5 pl-2 border-l border-blue-900/50">
+                <img id="userAvatarHeader" src="https://ui-avatars.com/api/?name=User&background=CBD5E1&color=475569" alt="Foto Profil" class="w-8 h-8 rounded-full object-cover border border-esdmYellow">
+                <div class="text-left">
+                    <p id="userName" class="text-xs font-bold leading-tight">Amalia Putri</p>
+                    <p id="userRoleBadge" class="text-[10px] text-esdmYellow font-medium">Pegawai Internal DEN</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA DASHBOARD -->
+    <main class="max-w-7xl w-full mx-auto px-8 py-8 flex-grow">
+        
+        <div id="infoBanner" class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-center gap-3 text-xs text-blue-900">
+            <i class="fa-solid fa-circle-info text-esdmNavy text-base"></i>
+            <p id="infoBannerText">Akses Portal Internal DEN (Lantai 4 & Lantai 5) — Silakan pilih lokasi lantai rapat Anda.</p>
+        </div>
+
+        <!-- TAB LANTAI (OTOMATIS DISEMBUNYIKAN UNTUK EKSTERNAL) -->
+        <div id="floorTabContainer" class="flex items-center gap-4 mb-6">
+            <button onclick="switchFloor('lantai4')" id="btnLantai4" class="px-6 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 bg-esdmNavy text-white shadow-sm transition-all">
+                <i class="fa-solid fa-building text-esdmYellow"></i> Lantai 4 (Internal DEN)
+            </button>
+            <button onclick="switchFloor('lantai5')" id="btnLantai5" class="px-6 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-all">
+                <i class="fa-solid fa-building text-gray-400"></i> Lantai 5 (Rapat Besar / Dewan)
+            </button>
+        </div>
+
+        <!-- FILTER BAR -->
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div>
+                <label class="block text-[11px] font-semibold text-gray-500 uppercase mb-1">Kapasitas</label>
+                <select class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
+                    <option>Semua Kapasitas</option>
+                    <option>30 Orang</option>
+                    <option>80 Orang</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-gray-500 uppercase mb-1">Tanggal</label>
+                <input type="date" value="2026-03-05" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-[11px] font-semibold text-gray-500 uppercase mb-1">Jam Rapat</label>
+                <select class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
+                    <option>Semua Slot Jam (08:00 - 17:00 WIB)</option>
+                    <option>08:00 - 09:00 WIB</option>
+                    <option>09:00 - 10:00 WIB</option>
+                    <option>10:00 - 11:00 WIB</option>
+                    <option>11:00 - 12:00 WIB</option>
+                    <option>13:00 - 14:00 WIB</option>
+                    <option>14:00 - 15:00 WIB</option>
+                    <option>15:00 - 16:00 WIB</option>
+                    <option>16:00 - 17:00 WIB</option>
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button class="w-full bg-esdmNavy hover:bg-blue-900 text-white font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass"></i> Cari Ruangan
+                </button>
+            </div>
+        </div>
+
+        <!-- MATRIKS JADWAL REAL-TIME -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-base font-bold text-esdmNavy">Jadwal Real-Time Ruang Rapat</h2>
+                    <p id="matrixSubTitle" class="text-xs text-gray-500">Pemantauan ketersediaan slot jam secara langsung</p>
+                </div>
+                <div class="flex items-center gap-4 text-xs font-medium">
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-emerald-100 text-emerald-600 flex items-center justify-center text-[8px] font-bold">✓</span> Tersedia</span>
+                    <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-red-100 text-red-600 flex items-center justify-center text-[8px] font-bold">✕</span> Dipakai</span>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-center text-xs">
+                    <thead>
+                        <tr class="border-b border-gray-100 text-gray-400 font-semibold">
+                            <th class="text-left py-3 px-4">Ruangan</th>
+                            <th class="py-3">08:00</th><th class="py-3">09:00</th><th class="py-3">10:00</th><th class="py-3">11:00</th><th class="py-3">12:00</th><th class="py-3">13:00</th><th class="py-3">14:00</th><th class="py-3">15:00</th><th class="py-3">16:00</th><th class="py-3">17:00</th>
+                        </tr>
+                    </thead>
+                    <tbody id="matrixTableBody" class="divide-y divide-gray-50 font-medium">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- DAFTAR KARTU RUANGAN -->
+        <div class="mb-12">
+            <h2 id="roomListTitle" class="text-base font-bold text-esdmNavy mb-4">Daftar Ruang Rapat Tersedia</h2>
+            <div id="roomCardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            </div>
+        </div>
+
+        <!-- PUBLIC INSIGHT ANALYTICS (DISESUAIKAN BERDASARKAN ROLE) -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
+            <h2 class="text-base font-bold text-esdmNavy mb-1">Public Insight Analytics</h2>
+            <p id="analyticsSubtitle" class="text-xs text-gray-500 mb-6">Statistik Penggunaan Ruang Rapat (Informasi Umum & Anonim)</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                    <p class="text-[11px] font-semibold text-gray-500 uppercase mb-1">Total Rapat Bulan Ini</p>
+                    <p id="totalMeetingsCount" class="text-2xl font-bold text-esdmNavy">147 Rapat</p>
+                    <p class="text-[11px] text-gray-400 mt-1">Statistik per Maret 2026</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                    <p class="text-[11px] font-semibold text-gray-500 uppercase mb-1">Ruangan Terfavorit</p>
+                    <p id="favRoomName" class="text-2xl font-bold text-esdmNavy">Ruang 5.1 Dewan Utama</p>
+                    <p class="text-[11px] text-gray-400 mt-1">Paling sering digunakan</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-5 border border-gray-100">
+                    <p class="text-[11px] font-semibold text-gray-500 uppercase mb-1">Hari Tersibuk</p>
+                    <p class="text-2xl font-bold text-esdmNavy">Hari Selasa</p>
+                    <p class="text-[11px] text-gray-400 mt-1">Okupansi rata-rata tertinggi</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xs font-bold text-gray-700 uppercase mb-4">Tingkat Okupansi Ruangan (%)</h3>
+                    <div id="occupancyListContainer" class="space-y-3.5 text-xs">
+                        <!-- List Okupansi Dihasilkan via JS -->
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-xs font-bold text-gray-700 uppercase mb-4">Jam-Jam Sibuk (Peak Hours)</h3>
+                    <div class="space-y-3 text-xs">
+                        <div class="p-3.5 bg-blue-50/50 rounded-xl border border-blue-100 flex items-start gap-3">
+                            <i class="fa-regular fa-clock text-esdmNavy mt-0.5 text-sm"></i>
+                            <div>
+                                <p class="font-bold text-esdmNavy">09:00 - 11:00 WIB</p>
+                                <p class="text-gray-500 text-[11px] mt-0.5">Periode puncak paling ramai, disarankan untuk mereservasi jauh hari.</p>
+                            </div>
+                        </div>
+                        <div class="p-3.5 bg-blue-50/50 rounded-xl border border-blue-100 flex items-start gap-3">
+                            <i class="fa-regular fa-clock text-esdmNavy mt-0.5 text-sm"></i>
+                            <div>
+                                <p class="font-bold text-esdmNavy">14:00 - 15:30 WIB</p>
+                                <p class="text-gray-500 text-[11px] mt-0.5">Periode puncak kedua (sesi rapat sore).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-gray-100 px-10 py-6 text-center text-xs text-gray-500 flex justify-between items-center">
+        <p>Badan Pengembangan Sumber Daya Manusia ESDM</p>
+        <p>© 2026 Smart Meeting BPSDM ESDM. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const roomsData = {
+            lantai4: [
+                { id: '4.1', name: 'Ruang 4.1 Cendrawasih', capacity: '15 Orang', img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=200&fit=crop' },
+                { id: '4.2', name: 'Ruang 4.2 Garuda', capacity: '30 Orang', img: 'https://images.unsplash.com/photo-1517502884422-41eaead166d4?w=400&h=200&fit=crop' }
+            ],
+            lantai5: [
+                { id: '5.1', name: 'Ruang 5.1 Dewan Utama', capacity: '80 Orang', img: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=200&fit=crop' },
+                { id: '5.2', name: 'Ruang 5.2 Nusantara', capacity: '30 Orang', img: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=400&h=200&fit=crop' }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initDashboard();
+        });
+
+        function initDashboard() {
+            const role = localStorage.getItem('userRole') || 'internal';
+            const floorTabContainer = document.getElementById('floorTabContainer');
+            const portalBadge = document.getElementById('portalBadge');
+            const userRoleBadge = document.getElementById('userRoleBadge');
+            const infoBannerText = document.getElementById('infoBannerText');
+
+            const savedName = localStorage.getItem('profileName') || 'Amalia Putri';
+            const savedAvatar = localStorage.getItem('customAvatar');
+            const unknownAvatarUrl = "https://ui-avatars.com/api/?name=" + encodeURIComponent(savedName) + "&background=CBD5E1&color=475569";
+            
+            const userNameEl = document.getElementById('userName');
+            if (userNameEl) userNameEl.innerText = savedName;
+
+            const userAvatarEl = document.getElementById('userAvatarHeader');
+            if (userAvatarEl) {
+                if (!savedAvatar || savedAvatar === 'none') {
+                    userAvatarEl.src = unknownAvatarUrl;
+                } else {
+                    userAvatarEl.src = savedAvatar;
+                }
+            }
+
+            if (role === 'eksternal') {
+                // TAMPILAN KHUSUS EKSTERNAL (HANYA LANTAI 5)
+                if(floorTabContainer) floorTabContainer.classList.add('hidden');
+                if(portalBadge) portalBadge.innerText = 'Portal Eksternal ESDM';
+                if(userRoleBadge) userRoleBadge.innerText = 'Pengguna Eksternal';
+                if(infoBannerText) infoBannerText.innerText = 'Akses Portal Eksternal — Hanya menampilkan Ruang Rapat Besar / Dewan (Lantai 5).';
+                
+                switchFloor('lantai5');
+                renderAnalytics('eksternal');
+            } else {
+                // TAMPILAN INTERNAL DEN (LANTAI 4 & 5)
+                if(floorTabContainer) floorTabContainer.classList.remove('hidden');
+                if(portalBadge) portalBadge.innerText = 'Portal Internal DEN';
+                if(userRoleBadge) userRoleBadge.innerText = 'Pegawai Internal DEN';
+                if(infoBannerText) infoBannerText.innerText = 'Akses Portal Internal DEN (Lantai 4 & Lantai 5) — Silakan pilih lokasi lantai rapat Anda.';
+                
+                switchFloor('lantai4');
+                renderAnalytics('internal');
+            }
+        }
+
+        function switchFloor(floor) {
+            const btn4 = document.getElementById('btnLantai4');
+            const btn5 = document.getElementById('btnLantai5');
+
+            if (floor === 'lantai4') {
+                if(btn4) {
+                    btn4.className = "px-6 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 bg-esdmNavy text-white shadow-sm transition-all";
+                    btn4.querySelector('i').className = "fa-solid fa-building text-esdmYellow";
+                }
+                if(btn5) {
+                    btn5.className = "px-6 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-all";
+                    btn5.querySelector('i').className = "fa-solid fa-building text-gray-400";
+                }
+            } else {
+                if(btn5) {
+                    btn5.className = "px-6 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 bg-esdmNavy text-white shadow-sm transition-all";
+                    btn5.querySelector('i').className = "fa-solid fa-building text-esdmYellow";
+                }
+                if(btn4) {
+                    btn4.className = "px-6 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 transition-all";
+                    btn4.querySelector('i').className = "fa-solid fa-building text-gray-400";
+                }
+            }
+
+            renderContent(floor);
+        }
+
+        function renderContent(floor) {
+            const matrixContainer = document.getElementById('matrixTableBody');
+            const cardsContainer = document.getElementById('roomCardsContainer');
+            
+            matrixContainer.innerHTML = '';
+            cardsContainer.innerHTML = '';
+
+            roomsData[floor].forEach(room => {
+                matrixContainer.innerHTML += `
+                    <tr>
+                        <td class="text-left py-4 px-4 font-bold text-esdmNavy">${room.name}<br><span class="text-[10px] font-normal text-gray-400">Kapasitas: ${room.capacity}</span></td>
+                        <td><span class="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 font-semibold text-[10px]">TERSEDIA</span></td>
+                        <td><span class="px-2.5 py-1 rounded-md bg-red-50 text-red-700 font-semibold text-[10px]">DIPAKAI</span></td>
+                        <td><span class="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 font-semibold text-[10px]">TERSEDIA</span></td>
+                        <td><span class="px-2.5 py-1 rounded-md bg-red-50 text-red-700 font-semibold text-[10px]">DIPAKAI</span></td>
+                        <td><span class="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 font-semibold text-[10px]">TERSEDIA</span></td>
+                        <td><span class="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 font-semibold text-[10px]">TERSEDIA</span></td>
+                        <td><span class="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 font-semibold text-[10px]">TERSEDIA</span></td>
+                        <td><span class="px-2.5 py-1 rounded-md bg-red-50 text-red-700 font-semibold text-[10px]">DIPAKAI</span></td>
+                        <td><span class="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 font-semibold text-[10px]">TERSEDIA</span></td>
+                        <td><span class="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 font-semibold text-[10px]">TERSEDIA</span></td>
+                    </tr>
+                `;
+
+                const bookingUrl = `reservasi.html?id=${encodeURIComponent(room.id)}&name=${encodeURIComponent(room.name)}&capacity=${encodeURIComponent(room.capacity)}&img=${encodeURIComponent(room.img)}&floor=${floor === 'lantai4' ? 'Lantai 4' : 'Lantai 5'}`;
+
+                cardsContainer.innerHTML += `
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow">
+                        <div>
+                            <img src="${room.img}" alt="${room.name}" class="w-full h-36 object-cover">
+                            <div class="p-4">
+                                <h3 class="font-bold text-esdmNavy text-sm mb-1">${room.name}</h3>
+                                <p class="text-xs text-gray-500 mb-3"><i class="fa-regular fa-user text-[10px]"></i> Kapasitas: ${room.capacity}</p>
+                                <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-600 mb-4">
+                                    <div><i class="fa-solid fa-tv text-gray-400 mr-1"></i> Touchscreen TV</div>
+                                    <div><i class="fa-solid fa-volume-high text-gray-400 mr-1"></i> Sound System</div>
+                                    <div><i class="fa-solid fa-wind text-gray-400 mr-1"></i> Air Purifier</div>
+                                    <div><i class="fa-solid fa-video text-gray-400 mr-1"></i> Camera Conf</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 pt-0">
+                            <a href="${bookingUrl}" class="w-full bg-esdmYellow hover:bg-yellow-400 text-esdmNavy font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-colors shadow-sm">
+                                Reservasi Ruangan <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // FUNGSI RENDER ANALYTICS TAMPILAN PISAH UNTUK EKSTERNAL (LANTAI 5 SAJA)
+        function renderAnalytics(role) {
+            const subtitle = document.getElementById('analyticsSubtitle');
+            const totalMeetings = document.getElementById('totalMeetingsCount');
+            const favRoom = document.getElementById('favRoomName');
+            const container = document.getElementById('occupancyListContainer');
+
+            if (role === 'eksternal') {
+                subtitle.innerText = "Statistik Penggunaan Ruang Rapat Lantai 5 (Akses Eksternal & Dewan)";
+                totalMeetings.innerText = "68 Rapat";
+                favRoom.innerText = "Ruang 5.1 Dewan Utama";
+
+                // Hanya tampilkan Lantai 5
+                container.innerHTML = `
+                    <div>
+                        <div class="flex justify-between mb-1.5"><span class="font-medium text-gray-700">Ruang 5.1 Dewan Utama</span> <span class="font-bold text-esdmNavy">92%</span></div>
+                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-esdmNavy h-full rounded-full" style="width: 92%"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1.5"><span class="font-medium text-gray-700">Ruang 5.2 Nusantara</span> <span class="font-bold text-esdmNavy">60%</span></div>
+                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-esdmNavy h-full rounded-full" style="width: 60%"></div></div>
+                    </div>
+                `;
+            } else {
+                subtitle.innerText = "Statistik Penggunaan Ruang Rapat Seluruh Gedung (Lantai 4 & Lantai 5)";
+                totalMeetings.innerText = "147 Rapat";
+                favRoom.innerText = "Ruang 5.1 Dewan Utama";
+
+                // Tampilkan Semua Ruangan (Lantai 4 & 5)
+                container.innerHTML = `
+                    <div>
+                        <div class="flex justify-between mb-1.5"><span class="font-medium text-gray-700">Ruang 5.1 Dewan Utama</span> <span class="font-bold text-esdmNavy">92%</span></div>
+                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-esdmNavy h-full rounded-full" style="width: 92%"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1.5"><span class="font-medium text-gray-700">Ruang 4.2 Garuda</span> <span class="font-bold text-esdmNavy">75%</span></div>
+                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-esdmNavy h-full rounded-full" style="width: 75%"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1.5"><span class="font-medium text-gray-700">Ruang 5.2 Nusantara</span> <span class="font-bold text-esdmNavy">60%</span></div>
+                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-esdmNavy h-full rounded-full" style="width: 60%"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1.5"><span class="font-medium text-gray-700">Ruang 4.1 Cendrawasih</span> <span class="font-bold text-esdmNavy">45%</span></div>
+                        <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden"><div class="bg-esdmNavy h-full rounded-full" style="width: 45%"></div></div>
+                    </div>
+                `;
+            }
+        }
+
+        function toggleRoleDemo() {
+            const currentRole = localStorage.getItem('userRole') || 'internal';
+            const newRole = currentRole === 'internal' ? 'eksternal' : 'internal';
+            localStorage.setItem('userRole', newRole);
+            initDashboard();
+        }
+    </script>
+</body>
+</html>

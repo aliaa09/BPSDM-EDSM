@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Reservasi Ruang Rapat - Smart Meeting BPSDM ESDM</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        esdmNavy: '#1A365D',
+                        esdmYellow: '#FEDD00',
+                        esdmDark: '#2B2B2B',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- CSS PRINT CLEAN & NO OVERLAP -->
+    <style>
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            body {
+                background: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            header, footer, main > a, #roomSummaryBox, #stepperBox, #stepSection1, #stepSection2 {
+                display: none !important;
+            }
+            main {
+                max-width: 100% !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            #stepSection3 {
+                display: block !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            #stepSection3 > div:first-child, 
+            #stepSection3 > div:nth-child(2), 
+            #stepSection3 > div:last-child {
+                display: none !important;
+            }
+            #ticketPrintWrapper {
+                display: block !important;
+                position: relative !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            #ticketPdfContent {
+                box-shadow: none !important;
+                border: 1px solid #CBD5E1 !important;
+                width: 100% !important;
+                margin: 0 auto !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-[#F8FAFC] font-sans text-esdmDark min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER NAVIGATION BAR -->
+    <header class="bg-esdmNavy text-white px-10 py-4 flex justify-between items-center shadow-md">
+        <div class="flex items-center gap-3">
+            <img src="img/logo-esdm.png" alt="Logo ESDM" class="w-9 h-9 object-contain">
+            <div>
+                <h1 class="text-sm font-bold tracking-wide">Smart Meeting BPSDM ESDM</h1>
+                <p id="portalBadge" class="text-[10px] text-gray-300 tracking-wider uppercase">Portal Internal DEN</p>
+            </div>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+            <a href="beranda.html" class="text-gray-300 hover:text-white transition-colors">Dashboard Utama</a>
+            <a href="riwayat.html" class="text-gray-300 hover:text-white transition-colors">Riwayat Pemesanan</a>
+            <a href="profil.html" class="text-gray-300 hover:text-white transition-colors">Pengaturan Akun</a>
+        </nav>
+
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2.5 pl-2 border-l border-blue-900/50">
+                <img id="userAvatarHeader" src="https://ui-avatars.com/api/?name=User&background=CBD5E1&color=475569" alt="Foto Profil" class="w-8 h-8 rounded-full object-cover border border-esdmYellow">
+                <div class="text-left">
+                    <p id="userNameHeader" class="text-xs font-bold leading-tight">Amalia Putri</p>
+                    <p id="userRoleBadge" class="text-[10px] text-esdmYellow font-medium">Pegawai Internal DEN</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA FORM RESERVASI -->
+    <main class="max-w-4xl w-full mx-auto px-8 py-8 flex-grow">
+        
+        <a href="beranda.html" class="inline-flex items-center gap-2 text-xs font-semibold text-esdmNavy hover:underline mb-6">
+            <i class="fa-solid fa-arrow-left text-[10px]"></i> Kembali ke Dashboard Utama
+        </a>
+
+        <!-- STEPPER WIZARD -->
+        <div id="stepperBox" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
+            <div class="flex items-center justify-between max-w-2xl mx-auto relative">
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-100 z-0"></div>
+                <div id="stepLineProgress" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-esdmNavy z-0 transition-all duration-300" style="width: 0%;"></div>
+
+                <div class="relative z-10 flex flex-col items-center">
+                    <div id="stepCircle1" class="w-10 h-10 rounded-full bg-esdmNavy text-white font-bold flex items-center justify-center text-xs shadow-md">1</div>
+                    <span id="stepText1" class="text-[11px] font-bold text-esdmNavy mt-2">Detail Jadwal & Fasilitas</span>
+                </div>
+
+                <div class="relative z-10 flex flex-col items-center">
+                    <div id="stepCircle2" class="w-10 h-10 rounded-full bg-gray-100 text-gray-400 font-bold flex items-center justify-center text-xs border border-gray-200">2</div>
+                    <span id="stepText2" class="text-[11px] font-semibold text-gray-400 mt-2">Lampiran Dokumen</span>
+                </div>
+
+                <div class="relative z-10 flex flex-col items-center">
+                    <div id="stepCircle3" class="w-10 h-10 rounded-full bg-gray-100 text-gray-400 font-bold flex items-center justify-center text-xs border border-gray-200">3</div>
+                    <span id="stepText3" class="text-[11px] font-semibold text-gray-400 mt-2">Konfirmasi & E-Ticket</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORM CONTAINER -->
+        <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+            
+            <div id="roomSummaryBox" class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100 mb-8">
+                <img id="roomImg" src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=200&fit=crop" class="w-20 h-20 rounded-lg object-cover">
+                <div>
+                    <span id="roomFloorBadge" class="inline-block px-2.5 py-0.5 rounded-md bg-esdmYellow/20 text-esdmNavy text-[10px] font-bold mb-1">Lantai 4</span>
+                    <h2 id="roomTitle" class="text-base font-bold text-esdmNavy">Ruang 4.1 Cendrawasih</h2>
+                    <p id="roomCapacity" class="text-xs text-gray-500"><i class="fa-regular fa-user text-[10px]"></i> Kapasitas: 15 Orang</p>
+                </div>
+            </div>
+
+            <!-- TAHAP 1 -->
+            <div id="stepSection1" class="space-y-6">
+                <h3 class="text-sm font-bold text-esdmNavy border-b border-gray-100 pb-3">Informasi Acara & Rapat</h3>
+
+                <!-- ALERT JIKA JADWAL BENTROK -->
+                <div id="timeConflictAlert" class="hidden p-4 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 font-medium flex items-start gap-3">
+                    <i class="fa-solid fa-triangle-exclamation text-red-500 text-base mt-0.5"></i>
+                    <div>
+                        <p class="font-bold">Jadwal Rapat Bentrok!</p>
+                        <p id="conflictAlertMessage" class="mt-0.5">Jam yang Anda pilih sudah terpakai oleh agenda lain. Silakan pilih rentang jam lain yang tersedia.</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Nama Agenda / Subjek Rapat <span class="text-red-500">*</span></label>
+                    <input type="text" id="agendaInput" placeholder="Contoh: Rapat Koordinasi Evaluasi Program Kerja Q1" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-esdmNavy">
+                </div>
+
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Tanggal Rapat <span class="text-red-500">*</span></label>
+                <input type="date" id="dateInput" value="2026-03-05" onchange="checkTimeAvailability()" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-esdmNavy">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Jam Mulai <span class="text-red-500">*</span></label>
+                <select id="startTimeInput" onchange="checkTimeAvailability()" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-esdmNavy">
+                    <option value="08:00">08:00 WIB</option>
+                    <option value="09:00">09:00 WIB</option>
+                    <option value="10:00">10:00 WIB</option>
+                    <option value="11:00">11:00 WIB</option>
+                    <option value="12:00">12:00 WIB</option>
+                    <option value="13:00">13:00 WIB</option>
+                    <option value="14:00">14:00 WIB</option>
+                    <option value="15:00">15:00 WIB</option>
+                    <option value="16:00">16:00 WIB</option>
+            </select>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1">Jam Selesai <span class="text-red-500">*</span></label>
+                <select id="endTimeInput" onchange="checkTimeAvailability()" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-esdmNavy">
+                    <option value="09:00">09:00 WIB</option>
+                    <option value="10:00">10:00 WIB</option>
+                    <option value="11:00">11:00 WIB</option>
+                    <option value="12:00">12:00 WIB</option>
+                    <option value="13:00">13:00 WIB</option>
+                    <option value="14:00">14:00 WIB</option>
+                    <option value="15:00">15:00 WIB</option>
+                    <option value="16:00">16:00 WIB</option>
+                    <option value="17:00">17:00 WIB</option>
+            </select>
+            </div>
+        </div>
+
+                <!-- INDIKATOR SLOT JAM REAL-TIME PADA RUANGAN INI -->
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                    <div class="flex justify-between items-center mb-2.5">
+                        <label class="text-[11px] font-bold text-esdmNavy uppercase tracking-wider">
+                            <i class="fa-regular fa-clock mr-1 text-esdmYellow"></i> Status Ketersediaan Slot Jam (Tanggal Terpilih)
+                        </label>
+                        <div class="flex items-center gap-3 text-[10px]">
+                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-emerald-500"></span> Tersedia</span>
+                            <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-red-500"></span> Dipakai</span>
+                        </div>
+                    </div>
+                    <div id="slotBadgesContainer" class="grid grid-cols-4 md:grid-cols-8 gap-2 text-center text-[10px] font-bold">
+                        <!-- Generasi Otomatis via JS -->
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">Jumlah Peserta (Orang) <span class="text-red-500">*</span></label>
+                    <input type="number" id="participantsInput" value="10" min="1" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-esdmNavy">
+                </div>
+
+                <div class="pt-2 border-t border-gray-100">
+                    <label class="block text-xs font-bold text-esdmNavy mb-2">
+                        <i class="fa-solid fa-sliders text-esdmYellow mr-1"></i> Pilihan Permintaan Fasilitas Tambahan (Opsional)
+                    </label>
+                    <p class="text-[11px] text-gray-400 mb-3">Centang fasilitas pendukung yang ingin disiapkan oleh petugas pengelola gedung sebelum rapat dimulai:</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                        <label class="flex items-center gap-2.5 p-3 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors">
+                            <input type="checkbox" name="facilityOpt" value="Extra Wireless Microphones (2-4 Mic)" class="w-4 h-4 text-esdmNavy rounded border-gray-300 focus:ring-esdmNavy">
+                            <span class="font-medium text-gray-700"><i class="fa-solid fa-microphone text-gray-400 mr-1.5"></i> Extra Wireless Microphones</span>
+                        </label>
+                        <label class="flex items-center gap-2.5 p-3 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors">
+                            <input type="checkbox" name="facilityOpt" value="Papan Tulis Whiteboard & Spidol" class="w-4 h-4 text-esdmNavy rounded border-gray-300 focus:ring-esdmNavy">
+                            <span class="font-medium text-gray-700"><i class="fa-solid fa-chalkboard text-gray-400 mr-1.5"></i> Whiteboard & Spidol</span>
+                        </label>
+                        <label class="flex items-center gap-2.5 p-3 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors">
+                            <input type="checkbox" name="facilityOpt" value="Pendampingan Operator Sound & IT Support" class="w-4 h-4 text-esdmNavy rounded border-gray-300 focus:ring-esdmNavy">
+                            <span class="font-medium text-gray-700"><i class="fa-solid fa-headset text-gray-400 mr-1.5"></i> Pendampingan IT / Sound Engineer</span>
+                        </label>
+                        <label class="flex items-center gap-2.5 p-3 rounded-xl border border-gray-200 hover:bg-gray-50 cursor-pointer transition-colors">
+                            <input type="checkbox" name="facilityOpt" value="Meja Konsumsi / Setup Coffee Break" class="w-4 h-4 text-esdmNavy rounded border-gray-300 focus:ring-esdmNavy">
+                            <span class="font-medium text-gray-700"><i class="fa-solid fa-mug-hot text-gray-400 mr-1.5"></i> Setup Meja Coffee Break</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex justify-end">
+                    <button type="button" onclick="goToStep(2)" class="bg-esdmNavy hover:bg-blue-900 text-white font-bold px-6 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-colors">
+                        Lanjut ke Lampiran Dokumen <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAHAP 2 -->
+            <div id="stepSection2" class="space-y-5 hidden">
+                <h3 class="text-sm font-bold text-esdmNavy border-b border-gray-100 pb-3">Lampiran Nota Dinas / Surat Permohonan</h3>
+
+                <div class="border-2 border-dashed border-gray-300 hover:border-esdmNavy rounded-2xl p-8 text-center transition-colors bg-gray-50/50">
+                    <i class="fa-solid fa-file-pdf text-4xl text-gray-400 mb-3"></i>
+                    <p class="text-xs font-bold text-gray-700 mb-1">Unggah Surat Nota Dinas (PDF)</p>
+                    <p class="text-[11px] text-gray-400 mb-4">Maksimal ukuran file 5 MB (.pdf)</p>
+                    
+                    <input type="file" id="pdfFileInput" accept=".pdf" class="hidden" onchange="handleFileSelected(event)">
+                    <button type="button" onclick="document.getElementById('pdfFileInput').click()" class="bg-white border border-gray-300 text-gray-700 font-semibold px-4 py-2 rounded-xl text-xs hover:bg-gray-50 transition-colors">
+                        <i class="fa-solid fa-upload mr-1.5"></i> Pilih File Nota Dinas
+                    </button>
+
+                    <div id="fileStatus" class="hidden mt-4 text-xs font-bold text-emerald-600 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-circle-check"></i> <span id="fileNameDisplay">nota_dinas_2026.pdf</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-between pt-4">
+                    <button type="button" onclick="goToStep(1)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-6 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-colors">
+                        <i class="fa-solid fa-arrow-left text-[10px]"></i> Kembali
+                    </button>
+                    <button type="button" onclick="goToStep(3)" class="bg-esdmNavy hover:bg-blue-900 text-white font-bold px-6 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-colors">
+                        Konfirmasi & Ajukan Reservasi <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- TAHAP 3 -->
+            <div id="stepSection3" class="text-center py-4 space-y-6 hidden">
+                <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-xl mx-auto shadow-sm">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+
+                <div>
+                    <h3 class="text-lg font-bold text-esdmNavy mb-1">Pengajuan Reservasi Berhasil!</h3>
+                    <p class="text-xs text-gray-500">E-Ticket resmi telah diterbitkan di bawah ini.</p>
+                </div>
+
+                <div id="ticketPrintWrapper" class="overflow-x-auto pb-4">
+                    <div id="ticketPdfContent" class="bg-white text-esdmDark p-8 rounded-xl border border-gray-200 text-left shadow-md mx-auto" style="width: 210mm; min-height: 297mm; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                        
+                        <div class="flex justify-between items-center border-b-2 border-esdmNavy pb-5 mb-6">
+                            <div class="flex items-center gap-4">
+                                <img src="img/logo-esdm.png" class="w-14 h-14 object-contain">
+                                <div>
+                                    <h2 class="text-base font-bold text-esdmNavy uppercase tracking-wider">KEMENTERIAN ENERGI DAN SUMBER DAYA MINERAL</h2>
+                                    <p class="text-xs font-semibold text-gray-700">BADAN PENGEMBANGAN SUMBER DAYA MANUSIA ESDM</p>
+                                    <p class="text-[10px] text-gray-500">Sistem Informasi Layanan Smart Meeting & Reservasi Ruang Rapat</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="ticketStatusBadge" class="inline-block px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-xs border border-emerald-300">
+                                    ● DISETUJUI
+                                </span>
+                                <p class="text-[10px] text-gray-400 mt-1">Status Sistem: Otomatis Verified</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 border-l-4 border-esdmNavy p-4 mb-6 flex justify-between items-center rounded-r-lg">
+                            <div>
+                                <p class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">BUKTI RESERVASI RESMI (E-TICKET)</p>
+                                <h3 id="summaryCode" class="text-xl font-extrabold text-esdmNavy">#SM-2026-0928</h3>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] text-gray-500">Tanggal Diterbitkan:</p>
+                                <p id="issueDate" class="text-xs font-bold text-gray-800">05 Maret 2026</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6 mb-6 text-xs">
+                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
+                                <h4 class="font-bold text-esdmNavy text-xs border-b border-gray-200 pb-1.5 uppercase tracking-wide">
+                                    <i class="fa-solid fa-user-gear mr-1 text-esdmYellow"></i> Informasi Pemohon
+                                </h4>
+                                <div class="flex justify-between py-1"><span class="text-gray-500">Nama Lengkap:</span> <span id="summaryApplicant" class="font-bold text-gray-800">Amalia Putri</span></div>
+                                <div class="flex justify-between py-1"><span class="text-gray-500">Unit / Instansi:</span> <span id="summaryUnit" class="font-semibold text-gray-800">Dewan Energi Nasional (DEN)</span></div>
+                                <div class="flex justify-between py-1"><span class="text-gray-500">Jabatan:</span> <span id="summaryPos" class="font-semibold text-gray-800">Staf Analis Kebijakan</span></div>
+                                <div class="flex justify-between py-1"><span class="text-gray-500">Kontak Email:</span> <span id="summaryEmail" class="font-semibold text-gray-800">amalia@esdm.go.id</span></div>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
+                                <h4 class="font-bold text-esdmNavy text-xs border-b border-gray-200 pb-1.5 uppercase tracking-wide">
+                                    <i class="fa-solid fa-location-dot mr-1 text-esdmYellow"></i> Detail Lokasi & Ruangan
+                                </h4>
+                                <div class="flex justify-between py-1"><span class="text-gray-500">Nama Ruangan:</span> <span id="summaryRoom" class="font-bold text-esdmNavy">Ruang 4.1 Cendrawasih</span></div>
+                                <div class="flex justify-between py-1"><span class="text-gray-500">Lantai Gedung:</span> <span id="summaryFloor" class="font-semibold text-gray-800">Lantai 4 (Internal DEN)</span></div>
+                                <div class="flex justify-between py-1"><span class="text-gray-500">Kapasitas Maksimal:</span> <span id="summaryCap" class="font-semibold text-gray-800">15 Orang</span></div>
+                                <div class="flex justify-between py-1"><span class="text-gray-500">Estimasi Peserta:</span> <span id="summaryParticipants" class="font-bold text-esdmNavy">10 Orang</span></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-6 text-xs">
+                            <h4 class="font-bold text-esdmNavy text-xs mb-3 uppercase tracking-wide">
+                                <i class="fa-solid fa-calendar-check mr-1 text-esdmYellow"></i> Rincian Waktu & Agenda Acara
+                            </h4>
+                            <table class="w-full border-collapse border border-gray-200 rounded-lg overflow-hidden">
+                                <thead>
+                                    <tr class="bg-esdmNavy text-white text-left font-semibold">
+                                        <th class="p-3 border border-gray-300">Agenda / Subjek Rapat</th>
+                                        <th class="p-3 border border-gray-300">Tanggal Pelaksanaan</th>
+                                        <th class="p-3 border border-gray-300">Durasi Jam</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="bg-white text-gray-800 font-medium">
+                                        <td id="summaryAgenda" class="p-3 border border-gray-200 font-bold">Rapat Koordinasi Evaluasi Program Kerja Q1</td>
+                                        <td id="summaryDate" class="p-3 border border-gray-200">05 Maret 2026</td>
+                                        <td id="summaryTime" class="p-3 border border-gray-200 font-bold text-esdmNavy">08:00 - 10:00 WIB</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="mb-6 text-xs bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <h4 class="font-bold text-esdmNavy text-xs mb-1.5 uppercase tracking-wide">
+                                <i class="fa-solid fa-list-check mr-1 text-esdmYellow"></i> Permintaan Fasilitas Tambahan
+                            </h4>
+                            <p id="summaryFacilities" class="text-gray-700 font-medium italic">- Tidak ada permintaan fasilitas tambahan -</p>
+                        </div>
+
+                        <div class="bg-yellow-50/70 border border-yellow-200 rounded-xl p-4 text-[11px] text-yellow-900 mb-8 space-y-1.5">
+                            <p class="font-bold flex items-center gap-1.5 text-yellow-950">
+                                <i class="fa-solid fa-circle-exclamation text-yellow-600"></i> Ketentuan Penggunaan Ruang Rapat BPSDM ESDM:
+                            </p>
+                            <ul class="list-disc list-inside space-y-1 pl-1 text-gray-700">
+                                <li>Harap hadir 10 menit sebelum waktu rapat dimulai.</li>
+                                <li>Tunjukkan dokumen E-Ticket ini (digital/cetak) kepada petugas pengelola gedung atau teknisi di lokasi.</li>
+                                <li>Pastikan seluruh fasilitas (Touchscreen TV, Microphones, AC) dimatikan kembali setelah penggunaan selesai.</li>
+                            </ul>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-200 grid grid-cols-2 gap-8 text-xs text-center mt-auto">
+                            <div>
+                                <p class="text-gray-500 mb-8">Petugas Pengelola Gedung BPSDM ESDM,</p>
+                                <p class="font-bold text-esdmNavy underline">Tim Layanan Internal BPSDM</p>
+                                <p class="text-[10px] text-gray-400">Verifikasi Otomatis Sistem Smart Meeting</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-500 mb-8">Pemohon / Penanggung Jawab Agenda,</p>
+                                <p id="summarySignatureName" class="font-bold text-esdmNavy underline">Amalia Putri</p>
+                                <p id="summarySignatureUnit" class="text-[10px] text-gray-400">Sekretariat DEN</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="flex justify-center gap-4 pt-2">
+                    <button type="button" onclick="downloadPdfTicket()" class="bg-esdmYellow hover:bg-yellow-400 text-esdmNavy font-bold px-8 py-3 rounded-xl text-xs flex items-center gap-2 transition-colors shadow-md">
+                        <i class="fa-solid fa-file-pdf text-sm"></i> Unduh E-Ticket (PDF A4)
+                    </button>
+                    <a href="riwayat.html" class="bg-esdmNavy hover:bg-blue-900 text-white font-bold px-8 py-3 rounded-xl text-xs flex items-center gap-2 transition-colors">
+                        Lihat Riwayat Pemesanan
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-gray-100 px-10 py-6 text-center text-xs text-gray-500 flex justify-between items-center">
+        <p>Badan Pengembangan Sumber Daya Manusia ESDM</p>
+        <p>© 2026 Smart Meeting BPSDM ESDM. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // CONTOH DATA SIMULASI SLOT TERPAKAI UNTUK DIPERIKSA SISTEM
+        // Di aplikasi sungguhan, data ini didapat dari database
+        const occupiedSlots = [
+            { start: 9, end: 10 },  // 09:00 - 10:00 (Terpakai)
+            { start: 11, end: 12 }, // 11:00 - 12:00 (Terpakai)
+            { start: 14, end: 15 }  // 14:00 - 15:00 (Terpakai)
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedName = localStorage.getItem('profileName') || 'Amalia Putri';
+            const savedAvatar = localStorage.getItem('customAvatar');
+            const role = localStorage.getItem('userRole') || 'internal';
+            const unknownAvatarUrl = "https://ui-avatars.com/api/?name=" + encodeURIComponent(savedName) + "&background=CBD5E1&color=475569";
+
+            const userNameEl = document.getElementById('userNameHeader');
+            if (userNameEl) userNameEl.innerText = savedName;
+
+            const userAvatarEl = document.getElementById('userAvatarHeader');
+            if (userAvatarEl) {
+                if (!savedAvatar || savedAvatar === 'none') {
+                    userAvatarEl.src = unknownAvatarUrl;
+                } else {
+                    userAvatarEl.src = savedAvatar;
+                }
+            }
+
+            const portalBadge = document.getElementById('portalBadge');
+            const userRoleBadge = document.getElementById('userRoleBadge');
+            if (role === 'eksternal') {
+                if (portalBadge) portalBadge.innerText = 'Portal Eksternal ESDM';
+                if (userRoleBadge) userRoleBadge.innerText = 'Pengguna Eksternal';
+            } else {
+                if (portalBadge) portalBadge.innerText = 'Portal Internal DEN';
+                if (userRoleBadge) userRoleBadge.innerText = 'Pegawai Internal DEN';
+            }
+
+            const params = new URLSearchParams(window.location.search);
+            const roomName = params.get('name');
+            const roomCap = params.get('capacity');
+            const roomImgUrl = params.get('img');
+            const roomFloor = params.get('floor');
+
+            if (roomName) document.getElementById('roomTitle').innerText = roomName;
+            if (roomCap) document.getElementById('roomCapacity').innerHTML = `<i class="fa-regular fa-user text-[10px]"></i> Kapasitas: ${roomCap}`;
+            if (roomImgUrl) document.getElementById('roomImg').src = roomImgUrl;
+            if (roomFloor) document.getElementById('roomFloorBadge').innerText = roomFloor;
+
+            // Render awal slot ketersediaan jam
+            checkTimeAvailability();
+        });
+
+        // FUNGSI CEK KETERSEDIAAN DAN Mencegah Bentrok Jam
+        function checkTimeAvailability() {
+            const startVal = parseInt(document.getElementById('startTimeInput').value.split(':')[0]);
+            const endVal = parseInt(document.getElementById('endTimeInput').value.split(':')[0]);
+
+            const alertBox = document.getElementById('timeConflictAlert');
+            const alertMsg = document.getElementById('conflictAlertMessage');
+
+            // 1. Validasi Jam Selesai harus lebih besar dari Jam Mulai
+            if (endVal <= startVal) {
+                alertBox.classList.remove('hidden');
+                alertMsg.innerText = "Jam Selesai harus lebih lambat daripada Jam Mulai rapat.";
+                renderSlotBadges(startVal, endVal, true);
+                return false;
+            }
+
+            // 2. Validasi apakah ada bentrok di antara rentang waktu pilihan
+            let isConflicted = false;
+            for (let hour = startVal; hour < endVal; hour++) {
+                const conflict = occupiedSlots.some(slot => hour >= slot.start && hour < slot.end);
+                if (conflict) {
+                    isConflicted = true;
+                    break;
+                }
+            }
+
+            if (isConflicted) {
+                alertBox.classList.remove('hidden');
+                alertMsg.innerText = `Ruangan sudah dipesan pada rentang jam tersebut (Ada slot jam yang terpakai). Silakan pilih jam lain.`;
+                renderSlotBadges(startVal, endVal, true);
+                return false;
+            } else {
+                alertBox.classList.add('hidden');
+                renderSlotBadges(startVal, endVal, false);
+                return true;
+            }
+        }
+
+        // FUNGSI UNTUK MERENDER INDIKATOR SLOT BADGES KEREN
+        function renderSlotBadges(selectedStart, selectedEnd, isError) {
+            const container = document.getElementById('slotBadgesContainer');
+            container.innerHTML = '';
+
+            const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16];
+
+            hours.forEach(h => {
+                const isOccupied = occupiedSlots.some(slot => h >= slot.start && h < slot.end);
+                const isSelected = h >= selectedStart && h < selectedEnd;
+
+                let badgeClass = "bg-emerald-100 text-emerald-800 border-emerald-300";
+                let statusText = "Tersedia";
+
+                if (isOccupied) {
+                    badgeClass = "bg-red-100 text-red-800 border-red-300";
+                    statusText = "Dipakai";
+                } else if (isSelected && !isError) {
+                    badgeClass = "bg-esdmNavy text-white border-esdmNavy ring-2 ring-esdmYellow";
+                    statusText = "Pilihanmu";
+                } else if (isSelected && isError) {
+                    badgeClass = "bg-red-500 text-white border-red-600";
+                    statusText = "Bentrok!";
+                }
+
+                const formatHour = h < 10 ? `0${h}:00` : `${h}:00`;
+
+                container.innerHTML += `
+                    <div class="p-1.5 rounded-lg border ${badgeClass} transition-all">
+                        <p class="font-bold">${formatHour}</p>
+                        <p class="text-[8px] font-normal opacity-90">${statusText}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function goToStep(step) {
+            const sec1 = document.getElementById('stepSection1');
+            const sec2 = document.getElementById('stepSection2');
+            const sec3 = document.getElementById('stepSection3');
+            const roomSummaryBox = document.getElementById('roomSummaryBox');
+
+            const c1 = document.getElementById('stepCircle1');
+            const c2 = document.getElementById('stepCircle2');
+            const c3 = document.getElementById('stepCircle3');
+
+            const progress = document.getElementById('stepLineProgress');
+
+            if (step === 1) {
+                sec1.classList.remove('hidden');
+                sec2.classList.add('hidden');
+                sec3.classList.add('hidden');
+                if (roomSummaryBox) roomSummaryBox.classList.remove('hidden');
+
+                c2.className = "w-10 h-10 rounded-full bg-gray-100 text-gray-400 font-bold flex items-center justify-center text-xs border border-gray-200";
+                progress.style.width = "0%";
+            } else if (step === 2) {
+                const agenda = document.getElementById('agendaInput').value.trim();
+                if (!agenda) {
+                    alert('Silakan isi Nama Agenda / Subjek Rapat terlebih dahulu.');
+                    return;
+                }
+
+                // EKSEKUSI CEK BENTROK JAM SEBELUM MASUK TAHAP 2
+                const isValid = checkTimeAvailability();
+                if (!isValid) {
+                    alert('Jadwal rapat bentrok atau tidak valid! Silakan perbaiki jam pilihan Anda.');
+                    return;
+                }
+
+                sec1.classList.add('hidden');
+                sec2.classList.remove('hidden');
+                sec3.classList.add('hidden');
+                if (roomSummaryBox) roomSummaryBox.classList.remove('hidden');
+
+                c2.className = "w-10 h-10 rounded-full bg-esdmNavy text-white font-bold flex items-center justify-center text-xs shadow-md";
+                c3.className = "w-10 h-10 rounded-full bg-gray-100 text-gray-400 font-bold flex items-center justify-center text-xs border border-gray-200";
+                progress.style.width = "50%";
+            } else if (step === 3) {
+                sec1.classList.add('hidden');
+                sec2.classList.add('hidden');
+                sec3.classList.remove('hidden');
+                if (roomSummaryBox) roomSummaryBox.classList.add('hidden');
+                
+                const stepperBox = document.getElementById('stepperBox');
+                if (stepperBox) stepperBox.classList.add('hidden');
+
+                c3.className = "w-10 h-10 rounded-full bg-esdmNavy text-white font-bold flex items-center justify-center text-xs shadow-md";
+                progress.style.width = "100%";
+
+                const savedName = localStorage.getItem('profileName') || 'Amalia Putri';
+                const savedUnit = localStorage.getItem('profileUnit') || 'Sekretariat DEN';
+                const savedPos = localStorage.getItem('profilePos') || 'Staf Analis Kebijakan';
+                const savedEmail = localStorage.getItem('profileEmail') || 'amalia@esdm.go.id';
+
+                const roomTitle = document.getElementById('roomTitle').innerText;
+                const roomCapText = document.getElementById('roomCapacity').innerText.replace('Kapasitas: ', '');
+                const floorText = document.getElementById('roomFloorBadge').innerText;
+                const agenda = document.getElementById('agendaInput').value;
+                const date = document.getElementById('dateInput').value;
+                const start = document.getElementById('startTimeInput').value;
+                const end = document.getElementById('endTimeInput').value;
+                const participants = document.getElementById('participantsInput').value;
+
+                const checkedFacs = Array.from(document.querySelectorAll('input[name="facilityOpt"]:checked')).map(cb => cb.value);
+                const facListText = checkedFacs.length > 0 ? "• " + checkedFacs.join("<br>• ") : "- Tidak ada permintaan fasilitas tambahan -";
+
+                document.getElementById('summaryApplicant').innerText = savedName;
+                document.getElementById('summaryUnit').innerText = savedUnit;
+                document.getElementById('summaryPos').innerText = savedPos;
+                document.getElementById('summaryEmail').innerText = savedEmail;
+
+                document.getElementById('summaryRoom').innerText = roomTitle;
+                document.getElementById('summaryFloor').innerText = floorText;
+                document.getElementById('summaryCap').innerText = roomCapText;
+                document.getElementById('summaryParticipants').innerText = `${participants} Orang`;
+
+                document.getElementById('summaryAgenda').innerText = agenda;
+                document.getElementById('summaryDate').innerText = date;
+                document.getElementById('summaryTime').innerText = `${start} - ${end} WIB`;
+                document.getElementById('summaryFacilities').innerHTML = facListText;
+
+                document.getElementById('summarySignatureName').innerText = savedName;
+                document.getElementById('summarySignatureUnit').innerText = savedUnit;
+            }
+        }
+
+        function handleFileSelected(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('fileNameDisplay').innerText = file.name;
+                document.getElementById('fileStatus').classList.remove('hidden');
+            }
+        }
+
+        function downloadPdfTicket() {
+            setTimeout(() => {
+                window.print();
+            }, 150);
+        }
+    </script>
+</body>
+</html>

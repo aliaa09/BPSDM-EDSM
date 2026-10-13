@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Registrasi - Smart Meeting BPSDM ESDM</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        esdmNavy: '#1A365D',
+                        esdmYellow: '#FEDD00',
+                        esdmDark: '#2B2B2B',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#F8FAFC] font-sans text-esdmDark min-h-screen flex items-center justify-center p-6">
+
+    <!-- CONTAINER UTAMA -->
+    <div class="max-w-5xl w-full bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden grid grid-cols-1 md:grid-cols-2">
+        
+        <!-- SISI KIRI: BRANDING & DESKRIPSI -->
+        <div class="p-10 md:p-14 flex flex-col justify-between bg-gradient-to-br from-white via-blue-50/30 to-blue-100/20">
+            <div>
+                <div class="flex items-center gap-3 mb-8">
+                    <img src="img/logo-esdm.png" alt="Logo ESDM" class="w-10 h-10 object-contain">
+                    <div>
+                        <h1 class="text-sm font-bold text-esdmNavy tracking-wide">Smart Meeting BPSDM ESDM</h1>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-wider">Portal Layanan Internal & Publik</p>
+                    </div>
+                </div>
+
+                <div class="inline-block px-3 py-1 rounded-full bg-esdmYellow/20 text-esdmNavy text-xs font-bold mb-4">
+                    LAYANAN KEDINASAN TERPADU
+                </div>
+                <h2 class="text-3xl font-extrabold text-esdmNavy leading-tight mb-4">
+                    Sistem Reservasi Ruang Rapat Berbasis Privasi DEN & BPSDM ESDM
+                </h2>
+                <p class="text-xs text-gray-600 leading-relaxed">
+                    Pilih portal sesuai kewenangan untuk mengatur reservasi ruang rapat dan akses gedung secara aman.
+                </p>
+            </div>
+
+            <div class="pt-8 border-t border-gray-200/60 text-[11px] text-gray-400">
+                © 2026 Badan Pengembangan Sumber Daya Manusia ESDM. All rights reserved.
+            </div>
+        </div>
+
+        <!-- SISI KANAN: FORM MASUK / DAFTAR -->
+        <div class="p-10 md:p-12 bg-white flex flex-col justify-center">
+            
+            <!-- VIEW 1: FORM LOGIN MASUK -->
+            <div id="loginFormView">
+                <div class="mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-esdmNavy flex items-center justify-center mb-3">
+                        <i class="fa-solid fa-shield-halved text-base"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-esdmNavy">Masuk Ke Akun Kedinasan</h3>
+                    <p class="text-xs text-gray-500 mt-1">Gunakan akun resmi ESDM untuk melanjutkan ke layanan reservasi.</p>
+                </div>
+
+                <form onsubmit="handleManualLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Email Kedinasan</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 text-xs">
+                                <i class="fa-regular fa-envelope"></i>
+                            </span>
+                            <input type="email" id="loginEmail" required placeholder="nama@esdm.go.id" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-xs focus:outline-none focus:border-esdmNavy focus:bg-white transition-all">
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-xs font-semibold text-gray-700">Kata Sandi</label>
+                            <a href="#" class="text-[11px] text-esdmNavy font-medium hover:underline">Lupa kata sandi?</a>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 text-xs">
+                                <i class="fa-solid fa-lock"></i>
+                            </span>
+                            <input type="password" id="loginPwd" required placeholder="••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-10 py-2.5 text-xs focus:outline-none focus:border-esdmNavy focus:bg-white transition-all">
+                            <span class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 text-xs cursor-pointer" onclick="togglePassword('loginPwd', 'eye1')">
+                                <i id="eye1" class="fa-regular fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-esdmNavy hover:bg-blue-900 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-md">
+                        Masuk Ke Sistem <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </button>
+                </form>
+
+                <div class="relative my-4 text-center">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
+                    <span class="relative bg-white px-3 text-[11px] text-gray-400 uppercase tracking-wider font-medium">atau</span>
+                </div>
+
+                <button type="button" onclick="openGoogleChooser()" class="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-2.5 px-4 border border-gray-300 rounded-xl text-xs flex items-center justify-center gap-2.5 transition-all shadow-sm mb-4">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    Masuk dengan Google
+                </button>
+
+                <!-- TOMBOL BUAT AKUN BARU -->
+                <div class="text-center text-xs text-gray-600 border-t border-gray-100 pt-3">
+                    Belum memiliki akun? 
+                    <button type="button" onclick="switchMainView('register')" class="font-bold text-esdmNavy hover:underline ml-1">
+                        Daftar Akun Baru
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW 2: FORM DAFTAR AKUN BARU (REGISTRASI MANUAL) -->
+            <div id="registerFormView" class="hidden">
+                <div class="mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-esdmYellow/20 text-esdmNavy flex items-center justify-center mb-3">
+                        <i class="fa-solid fa-user-plus text-base"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-esdmNavy">Pendaftaran Akun Baru</h3>
+                    <p class="text-xs text-gray-500 mt-1">Lengkapi data diri Anda untuk membuat akun Smart Meeting.</p>
+                </div>
+
+                <form onsubmit="handleManualRegister(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-gray-700 mb-1">Nama Lengkap</label>
+                        <input type="text" id="regName" required placeholder="Contoh: Amalia Putri" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-esdmNavy focus:bg-white">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-semibold text-gray-700 mb-1">Email Kedinasan / Umum</label>
+                        <input type="email" id="regEmail" required placeholder="nama@esdm.go.id" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-esdmNavy focus:bg-white">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-gray-700 mb-1">Akses Portal</label>
+                            <select id="regRole" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-2.5 py-2 text-xs focus:outline-none focus:border-esdmNavy">
+                                <option value="internal">Internal DEN</option>
+                                <option value="eksternal">Eksternal ESDM</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-gray-700 mb-1">Unit Kerja</label>
+                            <input type="text" id="regUnit" required placeholder="Sekretariat DEN" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-esdmNavy">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-semibold text-gray-700 mb-1">Kata Sandi</label>
+                        <div class="relative">
+                            <input type="password" id="regPwd" required placeholder="••••••••" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-esdmNavy">
+                            <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 text-xs cursor-pointer" onclick="togglePassword('regPwd', 'eye2')">
+                                <i id="eye2" class="fa-regular fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-esdmNavy hover:bg-blue-900 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-md mt-1">
+                        Buat Akun Sekarang <i class="fa-solid fa-check text-[10px]"></i>
+                    </button>
+                </form>
+
+                <div class="text-center text-xs text-gray-600 border-t border-gray-100 pt-3 mt-3">
+                    Sudah punya akun? 
+                    <button type="button" onclick="switchMainView('login')" class="font-bold text-esdmNavy hover:underline ml-1">
+                        Kembali ke Login
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- MODAL POP-UP GOOGLE INTERAKTIF -->
+    <div id="googleModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 space-y-4">
+            
+            <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    <span class="text-xs font-bold text-gray-700">Sign in with Google</span>
+                </div>
+                <button onclick="closeGoogleChooser()" class="text-gray-400 hover:text-gray-600 text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- VIEW 1: PILIHAN AKUN GOOGLE -->
+            <div id="googleAccountListView">
+                <div class="text-left mb-3">
+                    <div class="flex items-center gap-2 mb-1">
+                        <img src="img/logo-esdm.png" class="w-5 h-5 object-contain">
+                        <span class="text-xs font-bold text-esdmNavy">Smart Meeting BPSDM ESDM</span>
+                    </div>
+                    <h4 class="text-base font-extrabold text-gray-900">Choose an account</h4>
+                    <p class="text-[11px] text-gray-500">to continue to <span class="font-bold text-esdmNavy">Smart Meeting BPSDM ESDM</span></p>
+                </div>
+
+                <div id="googleAccountsContainer" class="space-y-1 divide-y divide-gray-100 max-h-56 overflow-y-auto pr-1">
+                </div>
+
+                <div class="pt-3 border-t border-gray-100 mt-2">
+                    <button onclick="showAddAccountForm()" class="w-full p-2.5 rounded-xl hover:bg-gray-50 flex items-center gap-3 text-left transition-colors text-gray-700">
+                        <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center text-xs border border-gray-200">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+                        <p class="text-xs font-semibold">Use another account</p>
+                    </button>
+                </div>
+            </div>
+
+            <!-- VIEW 2: FORM TAMBAH AKUN GOOGLE BARU DENGAN PILIHAN ROLE -->
+            <div id="googleAddAccountView" class="hidden text-left space-y-3">
+                <div>
+                    <h4 class="text-base font-bold text-gray-900">Sign in & Set Access</h4>
+                    <p class="text-[11px] text-gray-500">Enter your google account details</p>
+                </div>
+
+                <form onsubmit="handleAddNewGoogleAccount(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-gray-600 mb-1">Email or phone</label>
+                        <input type="email" id="newGoogleEmail" required placeholder="nama@esdm.go.id atau gmail.com" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-semibold text-gray-600 mb-1">Enter your password</label>
+                        <input type="password" id="newGooglePassword" required placeholder="••••••••" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600">
+                    </div>
+
+                    <!-- PILIHAN ROLE INTERNAL / EKSTERNAL SAAT MASUK PAKAI GOOGLE -->
+                    <div>
+                        <label class="block text-[11px] font-semibold text-gray-600 mb-1">Pilih Akses Hak Akses Portal</label>
+                        <select id="newGoogleRole" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-blue-600">
+                            <option value="internal">Internal DEN (Lantai 4 & 5)</option>
+                            <option value="eksternal">Eksternal ESDM (Lantai 5 Rapat Besar)</option>
+                        </select>
+                    </div>
+
+                    <div class="pt-2 flex justify-between items-center">
+                        <button type="button" onclick="showAccountList()" class="text-xs text-blue-600 font-semibold hover:underline">
+                            Back
+                        </button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg text-xs shadow-sm">
+                            Next & Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <p class="text-[10px] text-gray-400 text-center pt-2 border-t border-gray-100">
+                Before using this app, you can review Smart Meeting's <a href="#" class="text-esdmNavy hover:underline">Privacy Policy</a> and <a href="#" class="text-esdmNavy hover:underline">Terms of Service</a>.
+            </p>
+
+        </div>
+    </div>
+
+    <script>
+        const defaultAccounts = [
+            { name: "Amalia Zuliasri", email: "amalia@esdm.go.id", role: "internal", unit: "Sekretariat DEN" },
+            { name: "Amalia Z", email: "amalia9706@gmail.com", role: "eksternal", unit: "Pengguna Eksternal" }
+        ];
+
+        function getSavedGoogleAccounts() {
+            const saved = localStorage.getItem('googleAccountsList');
+            return saved ? JSON.parse(saved) : defaultAccounts;
+        }
+
+        function switchMainView(view) {
+            const loginView = document.getElementById('loginFormView');
+            const regView = document.getElementById('registerFormView');
+
+            if (view === 'register') {
+                loginView.classList.add('hidden');
+                regView.classList.remove('hidden');
+            } else {
+                regView.classList.add('hidden');
+                loginView.classList.remove('hidden');
+            }
+        }
+
+        function togglePassword(inputId, eyeId) {
+            const input = document.getElementById(inputId);
+            const eye = document.getElementById(eyeId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                eye.classList.remove('fa-eye');
+                eye.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                eye.classList.remove('fa-eye-slash');
+                eye.classList.add('fa-eye');
+            }
+        }
+
+        function handleManualLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            localStorage.setItem('profileName', 'Amalia Putri');
+            localStorage.setItem('profileEmail', email);
+            localStorage.setItem('userRole', 'internal');
+            localStorage.setItem('profileUnit', 'Sekretariat DEN');
+            window.location.href = 'beranda.html';
+        }
+
+        function handleManualRegister(event) {
+            event.preventDefault();
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const role = document.getElementById('regRole').value;
+            const unit = document.getElementById('regUnit').value;
+
+            localStorage.setItem('profileName', name);
+            localStorage.setItem('profileEmail', email);
+            localStorage.setItem('userRole', role);
+            localStorage.setItem('profileUnit', unit);
+
+            window.location.href = 'beranda.html';
+        }
+
+        function openGoogleChooser() {
+            renderGoogleAccounts();
+            showAccountList();
+            document.getElementById('googleModal').classList.remove('hidden');
+        }
+
+        function closeGoogleChooser() {
+            document.getElementById('googleModal').classList.add('hidden');
+        }
+
+        function renderGoogleAccounts() {
+            const accounts = getSavedGoogleAccounts();
+            const container = document.getElementById('googleAccountsContainer');
+            container.innerHTML = '';
+
+            accounts.forEach(acc => {
+                const initial = acc.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                const badgeColor = acc.role === 'internal' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800';
+                const avatarBg = acc.role === 'internal' ? 'bg-emerald-700' : 'bg-blue-600';
+
+                container.innerHTML += `
+                    <button onclick="selectGoogleAccount('${acc.name}', '${acc.email}', '${acc.role}', '${acc.unit}')" class="w-full p-2.5 rounded-xl hover:bg-gray-50 flex items-center gap-3 text-left transition-colors group">
+                        <div class="w-8 h-8 rounded-full ${avatarBg} text-white font-bold flex items-center justify-center text-xs shadow-sm flex-shrink-0">
+                            ${initial}
+                        </div>
+                        <div class="flex-grow overflow-hidden">
+                            <p class="text-xs font-bold text-gray-800 group-hover:text-esdmNavy truncate">${acc.name}</p>
+                            <p class="text-[11px] text-gray-500 truncate">${acc.email}</p>
+                        </div>
+                        <span class="text-[9px] ${badgeColor} font-bold px-2 py-0.5 rounded-md flex-shrink-0 capitalize">${acc.role}</span>
+                    </button>
+                `;
+            });
+        }
+
+        function showAddAccountForm() {
+            document.getElementById('googleAccountListView').classList.add('hidden');
+            document.getElementById('googleAddAccountView').classList.remove('hidden');
+        }
+
+        function showAccountList() {
+            document.getElementById('googleAddAccountView').classList.add('hidden');
+            document.getElementById('googleAccountListView').classList.remove('hidden');
+        }
+
+        function handleAddNewGoogleAccount(event) {
+            event.preventDefault();
+            const email = document.getElementById('newGoogleEmail').value.trim();
+            const selectedRole = document.getElementById('newGoogleRole').value;
+            if (!email) return;
+
+            const name = email.split('@')[0].replace(/[\._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const unit = selectedRole === 'internal' ? 'Sekretariat DEN' : 'Pengguna Eksternal';
+
+            const accounts = getSavedGoogleAccounts();
+            if (!accounts.some(a => a.email.toLowerCase() === email.toLowerCase())) {
+                accounts.push({ name, email, role: selectedRole, unit });
+                localStorage.setItem('googleAccountsList', JSON.stringify(accounts));
+            }
+
+            selectGoogleAccount(name, email, selectedRole, unit);
+        }
+
+        function selectGoogleAccount(name, email, role, unit) {
+            localStorage.setItem('profileName', name);
+            localStorage.setItem('profileEmail', email);
+            localStorage.setItem('userRole', role);
+            localStorage.setItem('profileUnit', unit);
+
+            closeGoogleChooser();
+            window.location.href = 'beranda.html';
+        }
+    </script>
+</body>
+</html>
