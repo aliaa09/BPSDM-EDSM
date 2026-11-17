@@ -154,6 +154,7 @@
                             <select id="regRole" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-2.5 py-2 text-xs focus:outline-none focus:border-esdmNavy">
                                 <option value="internal">Internal DEN</option>
                                 <option value="eksternal">Eksternal ESDM</option>
+                                <option value="admin_rt">Admin Rumah Tangga</option>
                             </select>
                         </div>
                         <div>
@@ -250,12 +251,13 @@
                         <input type="password" id="newGooglePassword" required placeholder="••••••••" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600">
                     </div>
 
-                    <!-- PILIHAN ROLE INTERNAL / EKSTERNAL SAAT MASUK PAKAI GOOGLE -->
+                    <!-- PILIHAN ROLE INTERNAL / EKSTERNAL / ADMIN -->
                     <div>
                         <label class="block text-[11px] font-semibold text-gray-600 mb-1">Pilih Akses Hak Akses Portal</label>
                         <select id="newGoogleRole" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-blue-600">
                             <option value="internal">Internal DEN (Lantai 4 & 5)</option>
                             <option value="eksternal">Eksternal ESDM (Lantai 5 Rapat Besar)</option>
+                            <option value="admin_rt">Admin Rumah Tangga (Panel Monitoring)</option>
                         </select>
                     </div>
 
@@ -280,7 +282,8 @@
     <script>
         const defaultAccounts = [
             { name: "Amalia Zuliasri", email: "amalia@esdm.go.id", role: "internal", unit: "Sekretariat DEN" },
-            { name: "Amalia Z", email: "amalia9706@gmail.com", role: "eksternal", unit: "Pengguna Eksternal" }
+            { name: "Amalia Z", email: "amalia9706@gmail.com", role: "eksternal", unit: "Pengguna Eksternal" },
+            { name: "Muhammad Yusuf", email: "yusuf.admin@esdm.go.id", role: "admin_rt", unit: "Admin Rumah Tangga" }
         ];
 
         function getSavedGoogleAccounts() {
@@ -337,7 +340,11 @@
             localStorage.setItem('userRole', role);
             localStorage.setItem('profileUnit', unit);
 
-            window.location.href = 'beranda.html';
+            if (role === 'admin_rt') {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'beranda.html';
+            }
         }
 
         function openGoogleChooser() {
@@ -357,8 +364,17 @@
 
             accounts.forEach(acc => {
                 const initial = acc.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                const badgeColor = acc.role === 'internal' ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800';
-                const avatarBg = acc.role === 'internal' ? 'bg-emerald-700' : 'bg-blue-600';
+                
+                let badgeColor = 'bg-blue-100 text-blue-800';
+                let avatarBg = 'bg-blue-600';
+                
+                if (acc.role === 'internal') {
+                    badgeColor = 'bg-emerald-100 text-emerald-800';
+                    avatarBg = 'bg-emerald-700';
+                } else if (acc.role === 'admin_rt') {
+                    badgeColor = 'bg-amber-100 text-amber-800';
+                    avatarBg = 'bg-esdmNavy';
+                }
 
                 container.innerHTML += `
                     <button onclick="selectGoogleAccount('${acc.name}', '${acc.email}', '${acc.role}', '${acc.unit}')" class="w-full p-2.5 rounded-xl hover:bg-gray-50 flex items-center gap-3 text-left transition-colors group">
@@ -369,7 +385,7 @@
                             <p class="text-xs font-bold text-gray-800 group-hover:text-esdmNavy truncate">${acc.name}</p>
                             <p class="text-[11px] text-gray-500 truncate">${acc.email}</p>
                         </div>
-                        <span class="text-[9px] ${badgeColor} font-bold px-2 py-0.5 rounded-md flex-shrink-0 capitalize">${acc.role}</span>
+                        <span class="text-[9px] ${badgeColor} font-bold px-2 py-0.5 rounded-md flex-shrink-0 capitalize">${acc.role.replace('_', ' ')}</span>
                     </button>
                 `;
             });
@@ -392,7 +408,9 @@
             if (!email) return;
 
             const name = email.split('@')[0].replace(/[\._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-            const unit = selectedRole === 'internal' ? 'Sekretariat DEN' : 'Pengguna Eksternal';
+            let unit = 'Pengguna Eksternal';
+            if (selectedRole === 'internal') unit = 'Sekretariat DEN';
+            if (selectedRole === 'admin_rt') unit = 'Admin Rumah Tangga';
 
             const accounts = getSavedGoogleAccounts();
             if (!accounts.some(a => a.email.toLowerCase() === email.toLowerCase())) {
@@ -410,7 +428,12 @@
             localStorage.setItem('profileUnit', unit);
 
             closeGoogleChooser();
-            window.location.href = 'beranda.html';
+            
+            if (role === 'admin_rt') {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'beranda.html';
+            }
         }
     </script>
 </body>

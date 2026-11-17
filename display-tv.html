@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Papan Informasi Digital Ruang Rapat - BPSDM ESDM</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        esdmNavy: '#1A365D',
+                        esdmYellow: '#FEDD00',
+                        esdmDark: '#2B2B2B',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#F8FAFC] font-sans text-esdmDark min-h-screen flex flex-col justify-between p-6 md:p-8 select-none">
+
+    <!-- HEADER PAPAN INFORMASI DIGITAL TV (LIGHT MODE) -->
+    <header class="bg-esdmNavy text-white rounded-3xl p-6 shadow-md flex justify-between items-center mb-6">
+        <div class="flex items-center gap-4">
+            <img src="img/logo-esdm.png" alt="Logo ESDM" class="w-12 h-12 md:w-14 md:h-14 object-contain">
+            <div>
+                <h1 class="text-lg md:text-2xl font-extrabold tracking-wide text-white uppercase">KEMENTERIAN ENERGI DAN SUMBER DAYA MINERAL</h1>
+                <p class="text-xs md:text-sm text-esdmYellow font-bold tracking-wider uppercase">PAPAN INFORMASI DIGITAL RUANG RAPAT — SELASAR LANTAI 4 & 5</p>
+            </div>
+        </div>
+
+        <!-- JAM REAL-TIME DIGITAL -->
+        <div class="bg-white/10 backdrop-blur-md px-6 py-3 rounded-2xl border border-white/20 text-right shadow-inner">
+            <h2 id="clockDisplay" class="text-2xl md:text-3xl font-black text-esdmYellow tracking-widest font-mono">13:27:47 WIB</h2>
+            <p id="dateDisplay" class="text-xs text-gray-200 font-semibold mt-0.5">Senin, 9 November 2026</p>
+        </div>
+    </header>
+
+    <!-- GRID UTAMA DAFTAR RUANGAN LENGKAP (4 RUANGAN) -->
+    <main class="mb-6 flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- 1. RUANG 4.1 CENDRAWASIH -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-200 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="px-3.5 py-1 rounded-lg bg-blue-100 text-blue-900 border border-blue-200 text-xs font-extrabold uppercase tracking-wider">
+                        LANTAI 4
+                    </span>
+                    <span class="px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> TERSEDIA (KOSONG)
+                    </span>
+                </div>
+
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h2 class="text-xl font-black text-esdmNavy">Ruang 4.1 Cendrawasih</h2>
+                        <p class="text-xs text-gray-500 mt-0.5"><i class="fa-regular fa-user text-[10px]"></i> Kapasitas: 15 Orang</p>
+                    </div>
+                    <span class="text-[11px] font-semibold text-gray-400 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">Sekretariat DEN</span>
+                </div>
+
+                <!-- MATRIKS JAM REAL-TIME -->
+                <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Ketersediaan Slot Jam Hari Ini:</p>
+                    <div class="grid grid-cols-5 gap-2 text-center font-bold text-[11px]">
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">08:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">09:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">10:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">11:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">12:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-red-100 border border-red-300 text-red-800">13:00<br><span class="text-[8px] font-normal">Dipakai</span></div>
+                        <div class="p-2 rounded-xl bg-red-100 border border-red-300 text-red-800">14:00<br><span class="text-[8px] font-normal">Dipakai</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">15:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">16:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">17:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-gray-100 text-[10px] text-gray-400 flex justify-between items-center mt-3">
+                <span>Fasilitas: Touchscreen TV, Air Purifier, Sound System</span>
+                <span class="font-bold text-esdmNavy">BPSDM ESDM</span>
+            </div>
+        </div>
+
+        <!-- 2. RUANG 4.2 GARUDA -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-200 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="px-3.5 py-1 rounded-lg bg-blue-100 text-blue-900 border border-blue-200 text-xs font-extrabold uppercase tracking-wider">
+                        LANTAI 4
+                    </span>
+                    <span class="px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> TERSEDIA (KOSONG)
+                    </span>
+                </div>
+
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h2 class="text-xl font-black text-esdmNavy">Ruang 4.2 Garuda</h2>
+                        <p class="text-xs text-gray-500 mt-0.5"><i class="fa-regular fa-user text-[10px]"></i> Kapasitas: 30 Orang</p>
+                    </div>
+                    <span class="text-[11px] font-semibold text-gray-400 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">Sekretariat DEN</span>
+                </div>
+
+                <!-- MATRIKS JAM REAL-TIME -->
+                <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Ketersediaan Slot Jam Hari Ini:</p>
+                    <div class="grid grid-cols-5 gap-2 text-center font-bold text-[11px]">
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">08:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-red-100 border border-red-300 text-red-800">09:00<br><span class="text-[8px] font-normal">Dipakai</span></div>
+                        <div class="p-2 rounded-xl bg-red-100 border border-red-300 text-red-800">10:00<br><span class="text-[8px] font-normal">Dipakai</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">11:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">12:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">13:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">14:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-red-100 border border-red-300 text-red-800">15:00<br><span class="text-[8px] font-normal">Dipakai</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">16:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">17:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-gray-100 text-[10px] text-gray-400 flex justify-between items-center mt-3">
+                <span>Fasilitas: Projector HD, Sound System, Mic Conference</span>
+                <span class="font-bold text-esdmNavy">BPSDM ESDM</span>
+            </div>
+        </div>
+
+        <!-- 3. RUANG 5.1 DEWAN UTAMA -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-200 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="px-3.5 py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-200 text-xs font-extrabold uppercase tracking-wider">
+                        LANTAI 5
+                    </span>
+                    <span class="px-3.5 py-1.5 rounded-full bg-red-100 text-red-800 border border-red-300 text-xs font-bold flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span> SEDANG DIPAKAI
+                    </span>
+                </div>
+
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h2 class="text-xl font-black text-esdmNavy">Ruang 5.1 Dewan Utama</h2>
+                        <p class="text-xs text-gray-500 mt-0.5"><i class="fa-regular fa-user text-[10px]"></i> Kapasitas: 80 Orang</p>
+                    </div>
+                    <span class="text-[11px] font-semibold text-gray-400 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">Rapat Besar / Dewan</span>
+                </div>
+
+                <!-- MATRIKS JAM REAL-TIME -->
+                <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Ketersediaan Slot Jam Hari Ini:</p>
+                    <div class="grid grid-cols-5 gap-2 text-center font-bold text-[11px]">
+                        <div class="p-2 rounded-xl bg-red-100 border border-red-300 text-red-800">08:00<br><span class="text-[8px] font-normal">Dipakai</span></div>
+                        <div class="p-2 rounded-xl bg-red-100 border border-red-300 text-red-800">09:00<br><span class="text-[8px] font-normal">Dipakai</span></div>
+                        <div class="p-2 rounded-xl bg-red-100 border border-red-300 text-red-800">10:00<br><span class="text-[8px] font-normal">Dipakai</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">11:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">12:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">13:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-red-100 border border-red-300 text-red-800">14:00<br><span class="text-[8px] font-normal">Dipakai</span></div>
+                        <div class="p-2 rounded-xl bg-red-100 border border-red-300 text-red-800">15:00<br><span class="text-[8px] font-normal">Dipakai</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">16:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">17:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-gray-100 text-[10px] text-gray-400 flex justify-between items-center mt-3">
+                <span>Fasilitas: Touchscreen TV, Sound System, Camera Conf</span>
+                <span class="font-bold text-esdmNavy">BPSDM ESDM</span>
+            </div>
+        </div>
+
+        <!-- 4. RUANG 5.2 NUSANTARA -->
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-200 flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="px-3.5 py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-200 text-xs font-extrabold uppercase tracking-wider">
+                        LANTAI 5
+                    </span>
+                    <span class="px-3.5 py-1.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> TERSEDIA (KOSONG)
+                    </span>
+                </div>
+
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h2 class="text-xl font-black text-esdmNavy">Ruang 5.2 Nusantara</h2>
+                        <p class="text-xs text-gray-500 mt-0.5"><i class="fa-regular fa-user text-[10px]"></i> Kapasitas: 30 Orang</p>
+                    </div>
+                    <span class="text-[11px] font-semibold text-gray-400 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">Rapat Besar / Dewan</span>
+                </div>
+
+                <!-- MATRIKS JAM REAL-TIME -->
+                <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                    <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2.5">Ketersediaan Slot Jam Hari Ini:</p>
+                    <div class="grid grid-cols-5 gap-2 text-center font-bold text-[11px]">
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">08:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">09:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">10:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">11:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">12:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">13:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-red-100 border border-red-300 text-red-800">14:00<br><span class="text-[8px] font-normal">Dipakai</span></div>
+                        <div class="p-2 rounded-xl bg-red-100 border border-red-300 text-red-800">15:00<br><span class="text-[8px] font-normal">Dipakai</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">16:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                        <div class="p-2 rounded-xl bg-emerald-100 border border-emerald-300 text-emerald-800">17:00<br><span class="text-[8px] font-normal">Tersedia</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-gray-100 text-[10px] text-gray-400 flex justify-between items-center mt-3">
+                <span>Fasilitas: Smart TV 75", Sound System, Wireless Mic</span>
+                <span class="font-bold text-esdmNavy">BPSDM ESDM</span>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER DIGITAL SIGNAGE (LIGHT MODE) -->
+    <footer class="bg-white rounded-2xl p-4 border border-gray-200 flex justify-between items-center text-xs text-gray-500 shadow-sm">
+        <p class="font-medium">Smart Meeting BPSDM ESDM — Digital Signage System</p>
+        <p>Silakan lakukan reservasi melalui portal: <span class="text-esdmNavy font-bold">smartmeeting.esdm.go.id</span></p>
+    </footer>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('clockDisplay').innerText = `${hours}:${minutes}:${seconds} WIB`;
+
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('dateDisplay').innerText = now.toLocaleDateString('id-ID', options);
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
