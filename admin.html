@@ -25,6 +25,20 @@
             }
         }
     </script>
+
+    <style>
+        @media print {
+            body * { visibility: hidden; }
+            #reportPrintArea, #reportPrintArea * { visibility: visible; }
+            #reportPrintArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                padding: 16px;
+            }
+        }
+    </style>
 </head>
 <body class="bg-[#F8FAFC] font-sans text-esdmDark min-h-screen flex flex-col justify-between">
 
@@ -80,7 +94,7 @@
         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8">
             <div>
                 <h1 class="text-xl font-extrabold text-esdmNavy">Panel Pengelolaan Rumah Tangga & Kelola Ruangan</h1>
-                <p class="text-xs text-gray-500 mt-1">Kelola permohonan reservasi, sinkronisasi TV Selasar, dan tambah/edit daftar ruang rapat secara real-time.</p>
+                <p class="text-xs text-gray-500 mt-1">Kelola pemantauan ruang rapat, sinkronisasi TV Selasar, dan tambah/edit fasilitas maupun foto ruangan.</p>
             </div>
             <div class="flex items-center gap-3">
                 <button onclick="openRoomModal()" class="bg-esdmYellow hover:bg-yellow-400 text-esdmNavy font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 shadow-sm transition-all">
@@ -88,7 +102,7 @@
                 </button>
                 <div class="bg-white border border-gray-200 px-4 py-2 rounded-xl text-xs font-bold text-gray-700 flex items-center gap-2 shadow-sm">
                     <i class="fa-regular fa-calendar text-esdmNavy"></i>
-                    <span>Senin, 9 November 2026</span>
+                    <span id="adminHeaderDate">Kamis, 19 November 2026</span>
                 </div>
             </div>
         </div>
@@ -101,8 +115,8 @@
                 </div>
                 <div>
                     <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">TOTAL RESERVASI HARI INI</p>
-                    <p class="text-2xl font-black text-esdmNavy">12</p>
-                    <p class="text-[10px] text-gray-400 mt-0.5">Hari Ini</p>
+                    <p id="todayTotalBookings" class="text-2xl font-black text-esdmNavy">5</p>
+                    <p class="text-[10px] text-gray-400 mt-0.5">Agenda Terjadwal</p>
                 </div>
             </div>
 
@@ -112,8 +126,8 @@
                 </div>
                 <div>
                     <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">RUANGAN TERPAKAI / AKTIF</p>
-                    <p class="text-2xl font-black text-esdmNavy">4</p>
-                    <p class="text-[10px] text-gray-400 mt-0.5">Terpakai</p>
+                    <p class="text-2xl font-black text-esdmNavy">3</p>
+                    <p class="text-[10px] text-gray-400 mt-0.5">Sedang Digunakan</p>
                 </div>
             </div>
 
@@ -134,7 +148,7 @@
             <div class="flex justify-between items-center mb-6">
                 <div>
                     <h2 class="text-base font-bold text-esdmNavy"><i class="fa-solid fa-sliders text-esdmYellow mr-2"></i> Pengaturan & Edit Daftar Ruangan (Real-time)</h2>
-                    <p class="text-xs text-gray-500 mt-0.5">Edit nama, kapasitas, atau unggah foto ruangan langsung dari galeri perangkat Anda.</p>
+                    <p class="text-xs text-gray-500 mt-0.5">Edit nama, kapasitas, fasilitas ruangan, atau unggah foto langsung dari perangkat Anda.</p>
                 </div>
                 <button onclick="openRoomModal()" class="text-xs font-bold text-esdmNavy hover:underline flex items-center gap-1">
                     <i class="fa-solid fa-plus-circle"></i> Tambah Ruang
@@ -152,11 +166,12 @@
             <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col justify-between">
                 <div>
                     <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-6">
-                        <h2 class="text-sm font-bold text-esdmNavy">Jadwal Penggunaan Ruang Rapat Hari Ini</h2>
-                        <select class="bg-gray-50 border border-gray-200 text-xs rounded-xl px-3 py-1.5 focus:outline-none font-medium">
-                            <option>Semua Ruangan</option>
-                            <option>Ruang 4.1 Cendrawasih</option>
-                            <option>Ruang 5.1 Dewan Utama</option>
+                        <div>
+                            <h2 class="text-sm font-bold text-esdmNavy">Jadwal Penggunaan Ruang Rapat Hari Ini</h2>
+                            <p class="text-[11px] text-gray-400">Monitoring khusus petugas Rumah Tangga</p>
+                        </div>
+                        <select id="adminRoomFilter" onchange="renderTodayScheduleTable()" class="bg-gray-50 border border-gray-200 text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-esdmNavy font-semibold text-esdmNavy">
+                            <option value="all">Semua Ruangan</option>
                         </select>
                     </div>
 
@@ -171,36 +186,17 @@
                                     <th class="py-3 px-4">NOTA DINAS</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100 font-medium">
-                                <tr>
-                                    <td class="py-4 px-4 font-bold text-esdmNavy">#SM-2026-0928</td>
-                                    <td class="py-4 px-4 text-gray-600">budi.santoso@esdm.go.id</td>
-                                    <td class="py-4 px-4 text-gray-800 font-semibold">Ruang 5.1 (Lt. 5)</td>
-                                    <td class="py-4 px-4 text-gray-600">09 Nov 2026 · 09:00-12:00</td>
-                                    <td class="py-4 px-4"><a href="#" class="text-esdmNavy font-bold hover:underline">Lihat PDF</a></td>
-                                </tr>
-                                <tr>
-                                    <td class="py-4 px-4 font-bold text-esdmNavy">#SM-2026-0926</td>
-                                    <td class="py-4 px-4 text-gray-600">koordinasi@kemenlu.go.id</td>
-                                    <td class="py-4 px-4 text-gray-800 font-semibold">Ruang 5.1 (Lt. 5)</td>
-                                    <td class="py-4 px-4 text-gray-600">09 Nov 2026 · 14:00-16:00</td>
-                                    <td class="py-4 px-4"><a href="#" class="text-esdmNavy font-bold hover:underline">Lihat PDF</a></td>
-                                </tr>
-                                <tr>
-                                    <td class="py-4 px-4 font-bold text-esdmNavy">#SM-2026-0925</td>
-                                    <td class="py-4 px-4 text-gray-600">amalia@esdm.go.id</td>
-                                    <td class="py-4 px-4 text-gray-800 font-semibold">Ruang 4.1 (Lt. 4)</td>
-                                    <td class="py-4 px-4 text-gray-600">09 Nov 2026 · 13:00-15:00</td>
-                                    <td class="py-4 px-4"><a href="#" class="text-esdmNavy font-bold hover:underline">Lihat PDF</a></td>
-                                </tr>
+                            <tbody id="todayScheduleBody" class="divide-y divide-gray-100 font-medium">
                             </tbody>
                         </table>
                     </div>
                 </div>
 
                 <div class="pt-4 border-t border-gray-100 text-[11px] text-gray-400 flex justify-between items-center mt-6">
-                    <span>Menampilkan 3 dari 12 pemesanan aktif hari ini</span>
-                    <a href="riwayat.html" class="text-esdmNavy font-bold hover:underline">Lihat Seluruh Riwayat →</a>
+                    <span id="todayScheduleFooterInfo">Menampilkan seluruh jadwal aktif hari ini</span>
+                    <button onclick="openMonthlyReportModal()" class="text-esdmNavy font-bold hover:underline flex items-center gap-1">
+                        <i class="fa-solid fa-table"></i> Rekap & Unduh Laporan Bulanan →
+                    </button>
                 </div>
             </div>
 
@@ -231,7 +227,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-xs font-bold text-gray-800">Sinkronkan Jadwal Hari Ini ke TV Selasar</p>
-                                <p class="text-[10px] text-gray-400">Terakhir disinkronkan: 9 Nov 2026, 07:30 WIB</p>
+                                <p class="text-[10px] text-gray-400">Terakhir disinkronkan: 19 Nov 2026, 07:30 WIB</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" checked class="sr-only peer">
@@ -253,8 +249,8 @@
                         <i class="fa-solid fa-chevron-right text-[10px] text-gray-400"></i>
                     </a>
 
-                    <button onclick="window.print()" class="w-full p-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex justify-between items-center text-xs font-semibold text-gray-700 transition-colors">
-                        <span><i class="fa-solid fa-print text-gray-400 mr-2"></i> Cetak Laporan Bulanan</span>
+                    <button onclick="openMonthlyReportModal()" class="w-full p-3 rounded-xl border border-gray-200 hover:bg-gray-50 flex justify-between items-center text-xs font-semibold text-gray-700 transition-colors">
+                        <span><i class="fa-solid fa-file-excel text-emerald-600 mr-2"></i> Cetak / Unduh Laporan Bulanan</span>
                         <i class="fa-solid fa-chevron-right text-[10px] text-gray-400"></i>
                     </button>
                 </div>
@@ -264,9 +260,9 @@
 
     </main>
 
-    <!-- MODAL POPUP: TAMBAH & EDIT RUANGAN (DENGAN UPLOAD FOTO DARI GALERI HP/KOMPUTER) -->
-    <div id="roomModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4">
+    <!-- MODAL POPUP: TAMBAH & EDIT RUANGAN (DENGAN UPLOAD FOTO & PILIHAN FASILITAS) -->
+    <div id="roomModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl space-y-4 my-8">
             <div class="flex justify-between items-center border-b border-gray-100 pb-3">
                 <h3 id="modalTitle" class="text-sm font-bold text-esdmNavy">Tambah Ruangan Baru</h3>
                 <button onclick="closeRoomModal()" class="text-gray-400 hover:text-gray-600 text-sm">
@@ -297,6 +293,37 @@
                     </div>
                 </div>
 
+                <!-- PENGATURAN FASILITAS RUANGAN -->
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1.5">Fasilitas Ruangan <span class="text-red-500">*</span></label>
+                    <div class="grid grid-cols-2 gap-2 bg-gray-50 p-3 rounded-xl border border-gray-200">
+                        <label class="flex items-center gap-2 cursor-pointer text-[11px] font-medium text-gray-700">
+                            <input type="checkbox" name="roomFacilityOpt" value="Touchscreen TV" class="w-3.5 h-3.5 text-esdmNavy rounded">
+                            <span><i class="fa-solid fa-tv text-gray-400 mr-1"></i> Touchscreen TV</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer text-[11px] font-medium text-gray-700">
+                            <input type="checkbox" name="roomFacilityOpt" value="Sound System" class="w-3.5 h-3.5 text-esdmNavy rounded">
+                            <span><i class="fa-solid fa-volume-high text-gray-400 mr-1"></i> Sound System</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer text-[11px] font-medium text-gray-700">
+                            <input type="checkbox" name="roomFacilityOpt" value="Air Purifier" class="w-3.5 h-3.5 text-esdmNavy rounded">
+                            <span><i class="fa-solid fa-wind text-gray-400 mr-1"></i> Air Purifier</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer text-[11px] font-medium text-gray-700">
+                            <input type="checkbox" name="roomFacilityOpt" value="Camera Conf" class="w-3.5 h-3.5 text-esdmNavy rounded">
+                            <span><i class="fa-solid fa-video text-gray-400 mr-1"></i> Camera Conf</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer text-[11px] font-medium text-gray-700">
+                            <input type="checkbox" name="roomFacilityOpt" value="Projector HD" class="w-3.5 h-3.5 text-esdmNavy rounded">
+                            <span><i class="fa-solid fa-display text-gray-400 mr-1"></i> Projector HD</span>
+                        </label>
+                        <label class="flex items-center gap-2 cursor-pointer text-[11px] font-medium text-gray-700">
+                            <input type="checkbox" name="roomFacilityOpt" value="Wireless Mic" class="w-3.5 h-3.5 text-esdmNavy rounded">
+                            <span><i class="fa-solid fa-microphone text-gray-400 mr-1"></i> Wireless Mic</span>
+                        </label>
+                    </div>
+                </div>
+
                 <!-- UPLOAD FOTO RUANGAN DARI GALERI / FILE PERANGKAT -->
                 <div>
                     <label class="block font-semibold text-gray-700 mb-1">Foto Ruangan <span class="text-red-500">*</span></label>
@@ -305,7 +332,7 @@
                         <input type="file" id="inputRoomFile" accept="image/*" class="hidden" onchange="handleRoomPhotoUpload(event)">
                         
                         <div id="roomPhotoPreviewBox" class="hidden mb-3">
-                            <img id="roomPhotoPreview" src="" alt="Preview Ruangan" class="w-full h-36 object-cover rounded-lg border border-gray-200 shadow-sm mx-auto">
+                            <img id="roomPhotoPreview" src="" alt="Preview Ruangan" class="w-full h-32 object-cover rounded-lg border border-gray-200 shadow-sm mx-auto">
                         </div>
 
                         <button type="button" onclick="document.getElementById('inputRoomFile').click()" class="bg-white border border-gray-300 text-esdmNavy font-bold px-4 py-2 rounded-xl text-xs hover:bg-gray-100 transition-colors inline-flex items-center gap-2 shadow-sm">
@@ -323,6 +350,76 @@
         </div>
     </div>
 
+    <!-- MODAL LAPORAN BULANAN (PILIH RUANGAN & UNDUH TABEL / CETAK PDF) -->
+    <div id="monthlyReportModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden overflow-y-auto">
+        <div class="bg-white rounded-2xl max-w-4xl w-full p-6 shadow-xl space-y-5 my-8">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-esdmNavy"><i class="fa-solid fa-file-lines text-esdmYellow mr-2"></i> Laporan Bulanan Penggunaan Ruang Rapat</h3>
+                    <p class="text-[11px] text-gray-500">Pilih semua ruangan atau centang ruangan tertentu untuk mengunduh data tabel atau mencetak laporan.</p>
+                </div>
+                <button onclick="closeMonthlyReportModal()" class="text-gray-400 hover:text-gray-600 text-base">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- FILTER PILIH RUANGAN (MULTI-SELECT) -->
+            <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-2.5 text-xs">
+                <div class="flex flex-wrap justify-between items-center gap-2">
+                    <span class="font-bold text-esdmNavy">Filter Ruangan Laporan:</span>
+                    <label class="inline-flex items-center gap-1.5 font-bold text-esdmNavy cursor-pointer">
+                        <input type="checkbox" id="selectAllReportRooms" checked onchange="toggleAllReportRooms(this)" class="w-4 h-4 rounded text-esdmNavy">
+                        <span>Pilih Semua Ruangan</span>
+                    </label>
+                </div>
+                <div id="reportRoomCheckboxes" class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                </div>
+            </div>
+
+            <!-- AREA TABEL LAPORAN (BISA DICETAK & DIUNDUH) -->
+            <div id="reportPrintArea" class="border border-gray-200 rounded-xl overflow-hidden">
+                <div class="bg-esdmNavy text-white px-4 py-3 flex justify-between items-center">
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider">Rekapitulasi Penggunaan Ruang Rapat — November 2026</h4>
+                        <p class="text-[10px] text-esdmYellow">BPSDM ESDM — Kementerian Energi dan Sumber Daya Mineral</p>
+                    </div>
+                    <span id="reportRowCounter" class="text-[11px] font-bold bg-white/10 px-2.5 py-1 rounded-lg">0 Data</span>
+                </div>
+                <div class="overflow-x-auto max-h-72">
+                    <table id="monthlyReportTable" class="w-full text-left text-xs">
+                        <thead class="bg-gray-50 text-gray-600 font-bold border-b border-gray-200 sticky top-0">
+                            <tr>
+                                <th class="py-2.5 px-3">ID RESERVASI</th>
+                                <th class="py-2.5 px-3">TANGGAL</th>
+                                <th class="py-2.5 px-3">RUANGAN</th>
+                                <th class="py-2.5 px-3">AGENDA RAPAT</th>
+                                <th class="py-2.5 px-3">PEMOHON</th>
+                                <th class="py-2.5 px-3">WAKTU</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monthlyReportTableBody" class="divide-y divide-gray-100">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TOMBOL AKSI UNDUH & CETAK -->
+            <div class="flex flex-wrap justify-between items-center gap-3 pt-2 border-t border-gray-100">
+                <button type="button" onclick="closeMonthlyReportModal()" class="px-4 py-2.5 rounded-xl bg-gray-100 text-gray-600 font-semibold text-xs hover:bg-gray-200 transition-colors">
+                    Tutup
+                </button>
+                <div class="flex flex-wrap gap-2.5">
+                    <button type="button" onclick="downloadReportCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-colors shadow-sm">
+                        <i class="fa-solid fa-file-excel"></i> Unduh Data Tabel (.CSV / Excel)
+                    </button>
+                    <button type="button" onclick="window.print()" class="bg-esdmNavy hover:bg-blue-900 text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-colors shadow-sm">
+                        <i class="fa-solid fa-print text-esdmYellow"></i> Cetak / Simpan PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <footer class="bg-white border-t border-gray-100 px-4 md:px-10 py-4 md:py-6 text-center text-xs text-gray-500 flex flex-col md:flex-row justify-between items-center gap-2">
         <p>Badan Pengembangan Sumber Daya Manusia ESDM</p>
         <p>© 2026 Smart Meeting BPSDM ESDM. All rights reserved.</p>
@@ -331,14 +428,50 @@
     <script>
         const defaultRoomsData = {
             lantai4: [
-                { id: '4.1', name: 'Ruang 4.1 Cendrawasih', capacity: '15 Orang', img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=200&fit=crop' },
-                { id: '4.2', name: 'Ruang 4.2 Garuda', capacity: '30 Orang', img: 'https://images.unsplash.com/photo-1517502884422-41eaead166d4?w=400&h=200&fit=crop' }
+                {
+                    id: '4.1',
+                    name: 'Ruang 4.1 Cendrawasih',
+                    capacity: '15 Orang',
+                    facilities: ['Touchscreen TV', 'Sound System', 'Air Purifier', 'Camera Conf'],
+                    img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=200&fit=crop'
+                },
+                {
+                    id: '4.2',
+                    name: 'Ruang 4.2 Garuda',
+                    capacity: '30 Orang',
+                    facilities: ['Projector HD', 'Sound System', 'Air Purifier', 'Wireless Mic'],
+                    img: 'https://images.unsplash.com/photo-1517502884422-41eaead166d4?w=400&h=200&fit=crop'
+                }
             ],
             lantai5: [
-                { id: '5.1', name: 'Ruang 5.1 Dewan Utama', capacity: '80 Orang', img: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=200&fit=crop' },
-                { id: '5.2', name: 'Ruang 5.2 Nusantara', capacity: '30 Orang', img: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=400&h=200&fit=crop' }
+                {
+                    id: '5.1',
+                    name: 'Ruang 5.1 Dewan Utama',
+                    capacity: '80 Orang',
+                    facilities: ['Touchscreen TV', 'Sound System', 'Air Purifier', 'Camera Conf'],
+                    img: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=200&fit=crop'
+                },
+                {
+                    id: '5.2',
+                    name: 'Ruang 5.2 Nusantara',
+                    capacity: '30 Orang',
+                    facilities: ['Touchscreen TV', 'Sound System', 'Wireless Mic', 'Camera Conf'],
+                    img: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=400&h=200&fit=crop'
+                }
             ]
         };
+
+        // Dataset Jadwal Hari Ini & Rekap Bulanan
+        const meetingRecords = [
+            { id: '#SM-2026-0928', date: '19 Nov 2026', isToday: true, email: 'budi.santoso@esdm.go.id', roomName: 'Ruang 5.1 Dewan Utama', roomShort: 'Ruang 5.1 (Lt. 5)', agenda: 'Rapat Pleno Kebijakan Energi Nasional', time: '09:00 - 11:59 WIB' },
+            { id: '#SM-2026-0926', date: '19 Nov 2026', isToday: true, email: 'koordinasi@kemenlu.go.id', roomName: 'Ruang 5.1 Dewan Utama', roomShort: 'Ruang 5.1 (Lt. 5)', agenda: 'Koordinasi Kerja Sama Energi Bilateral', time: '14:00 - 15:59 WIB' },
+            { id: '#SM-2026-0925', date: '19 Nov 2026', isToday: true, email: 'amalia@esdm.go.id', roomName: 'Ruang 4.1 Cendrawasih', roomShort: 'Ruang 4.1 (Lt. 4)', agenda: 'Evaluasi Sistem Smart Meeting BPSDM', time: '13:00 - 14:59 WIB' },
+            { id: '#SM-2026-0924', date: '19 Nov 2026', isToday: true, email: 'charin.stefany@esdm.go.id', roomName: 'Ruang 4.2 Garuda', roomShort: 'Ruang 4.2 (Lt. 4)', agenda: 'Workshop Penyusunan Kurikulum Diklat', time: '09:00 - 10:59 WIB' },
+            { id: '#SM-2026-0923', date: '19 Nov 2026', isToday: true, email: 'nisrina.zahran@esdm.go.id', roomName: 'Ruang 5.2 Nusantara', roomShort: 'Ruang 5.2 (Lt. 5)', agenda: 'Rapat Teknis Pengembangan SDM Aparatur', time: '14:00 - 15:59 WIB' },
+            { id: '#SM-2026-0891', date: '12 Nov 2026', isToday: false, email: 'shintya.dwi@esdm.go.id', roomName: 'Ruang 4.1 Cendrawasih', roomShort: 'Ruang 4.1 (Lt. 4)', agenda: 'Monitoring Anggaran Triwulan IV', time: '10:00 - 11:59 WIB' },
+            { id: '#SM-2026-0874', date: '05 Nov 2026', isToday: false, email: 'sekretariat@den.go.id', roomName: 'Ruang 5.1 Dewan Utama', roomShort: 'Ruang 5.1 (Lt. 5)', agenda: 'Sidang Anggota Dewan Energi Nasional', time: '08:00 - 11:59 WIB' },
+            { id: '#SM-2026-0850', date: '02 Nov 2026', isToday: false, email: 'diklat.teknis@esdm.go.id', roomName: 'Ruang 4.2 Garuda', roomShort: 'Ruang 4.2 (Lt. 4)', agenda: 'Persiapan Sertifikasi Kompetensi ESDM', time: '13:00 - 15:59 WIB' }
+        ];
 
         let currentUploadedImgData = '';
 
@@ -356,9 +489,22 @@
             try {
                 localStorage.setItem('customRoomsData', JSON.stringify(data));
                 renderAdminRoomList();
+                populateRoomFilterDropdown();
             } catch (e) {
                 alert('Ukuran file foto terlalu besar untuk penyimpanan browser! Silakan pilih foto dengan ukuran lebih kecil.');
             }
+        }
+
+        function getFacilityIcon(facName) {
+            const map = {
+                'Touchscreen TV': 'fa-tv',
+                'Sound System': 'fa-volume-high',
+                'Air Purifier': 'fa-wind',
+                'Camera Conf': 'fa-video',
+                'Projector HD': 'fa-display',
+                'Wireless Mic': 'fa-microphone'
+            };
+            return map[facName] || 'fa-circle-check';
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -373,6 +519,8 @@
             if (adminAvatarHeader) adminAvatarHeader.src = (savedAvatar && savedAvatar !== 'none') ? savedAvatar : defaultAvatarUrl;
 
             renderAdminRoomList();
+            populateRoomFilterDropdown();
+            renderTodayScheduleTable();
         });
 
         function renderAdminRoomList() {
@@ -385,13 +533,23 @@
             ['lantai4', 'lantai5'].forEach(floorKey => {
                 data[floorKey].forEach(room => {
                     totalCount++;
+                    const facs = room.facilities || ['Touchscreen TV', 'Sound System', 'Air Purifier', 'Camera Conf'];
+                    const facBadgesHtml = facs.slice(0, 4).map(f => `
+                        <span class="inline-flex items-center gap-1 text-[9px] bg-white border border-gray-200 text-gray-600 px-1.5 py-0.5 rounded">
+                            <i class="fa-solid ${getFacilityIcon(f)} text-gray-400"></i> ${f}
+                        </span>
+                    `).join('');
+
                     grid.innerHTML += `
                         <div class="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden flex flex-col justify-between p-3 relative group">
                             <div>
                                 <img src="${room.img}" class="w-full h-24 object-cover rounded-lg mb-2">
                                 <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-esdmNavy/10 text-esdmNavy uppercase">${floorKey === 'lantai4' ? 'Lantai 4' : 'Lantai 5'}</span>
                                 <h4 class="font-bold text-xs text-esdmNavy mt-1">${room.name}</h4>
-                                <p class="text-[10px] text-gray-500"><i class="fa-regular fa-user text-[9px]"></i> ${room.capacity}</p>
+                                <p class="text-[10px] text-gray-500 mb-2"><i class="fa-regular fa-user text-[9px]"></i> ${room.capacity}</p>
+                                <div class="flex flex-wrap gap-1 mb-1">
+                                    ${facBadgesHtml}
+                                </div>
                             </div>
                             <div class="pt-2 mt-2 border-t border-gray-200 flex justify-end gap-1.5">
                                 <button onclick="editRoom('${floorKey}', '${room.id}')" class="p-1.5 bg-white border border-gray-200 rounded-lg text-xs text-blue-700 hover:bg-blue-50 transition-colors" title="Edit Ruangan">
@@ -409,13 +567,66 @@
             document.getElementById('totalRoomsCount').innerText = `${totalCount} Ruangan`;
         }
 
+        function populateRoomFilterDropdown() {
+            const select = document.getElementById('adminRoomFilter');
+            const currentVal = select.value;
+            const data = getRoomsData();
+            const allRooms = [...data.lantai4, ...data.lantai5];
+
+            select.innerHTML = `<option value="all">Semua Ruangan</option>`;
+            allRooms.forEach(room => {
+                select.innerHTML += `<option value="${room.name}">${room.name}</option>`;
+            });
+
+            if (Array.from(select.options).some(o => o.value === currentVal)) {
+                select.value = currentVal;
+            }
+        }
+
+        function renderTodayScheduleTable() {
+            const filterVal = document.getElementById('adminRoomFilter').value;
+            const tbody = document.getElementById('todayScheduleBody');
+            const footerInfo = document.getElementById('todayScheduleFooterInfo');
+            const todayTotalEl = document.getElementById('todayTotalBookings');
+
+            const todayData = meetingRecords.filter(item => item.isToday);
+            todayTotalEl.innerText = todayData.length;
+
+            const filtered = filterVal === 'all'
+                ? todayData
+                : todayData.filter(item => item.roomName === filterVal);
+
+            tbody.innerHTML = '';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-gray-400 text-xs">Tidak ada jadwal penggunaan untuk ruangan terpilih hari ini.</td>
+                    </tr>
+                `;
+            } else {
+                filtered.forEach(item => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="py-4 px-4 font-bold text-esdmNavy">${item.id}</td>
+                            <td class="py-4 px-4 text-gray-600">${item.email}</td>
+                            <td class="py-4 px-4 text-gray-800 font-semibold">${item.roomShort}</td>
+                            <td class="py-4 px-4 text-gray-600">${item.date} · ${item.time}</td>
+                            <td class="py-4 px-4"><a href="reservasi.html" class="text-esdmNavy font-bold hover:underline">Lihat PDF</a></td>
+                        </tr>
+                    `;
+                });
+            }
+
+            footerInfo.innerText = `Menampilkan ${filtered.length} dari ${todayData.length} pemesanan aktif hari ini`;
+        }
+
         function handleRoomPhotoUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                // Kompres gambar menggunakan canvas agar aman masuk ke localStorage
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
@@ -443,6 +654,12 @@
             document.getElementById('inputRoomCapacity').value = '';
             document.getElementById('inputRoomFile').value = '';
             currentUploadedImgData = '';
+
+            // Default centang 4 fasilitas standar saat tambah baru
+            document.querySelectorAll('input[name="roomFacilityOpt"]').forEach(cb => {
+                cb.checked = ['Touchscreen TV', 'Sound System', 'Air Purifier', 'Camera Conf'].includes(cb.value);
+            });
+
             document.getElementById('roomPhotoPreviewBox').classList.add('hidden');
             document.getElementById('uploadBtnLabel').innerText = 'Pilih Foto dari Perangkat / Galeri';
             document.getElementById('roomModal').classList.remove('hidden');
@@ -457,13 +674,18 @@
             const room = data[floorKey].find(r => r.id === roomId);
 
             if (room) {
-                document.getElementById('modalTitle').innerText = 'Edit Ruangan';
+                document.getElementById('modalTitle').innerText = 'Edit Ruangan & Fasilitas';
                 document.getElementById('editRoomId').value = room.id;
                 document.getElementById('editRoomFloorGroup').value = floorKey;
                 document.getElementById('inputRoomName').value = room.name;
                 document.getElementById('inputRoomFloor').value = floorKey;
                 document.getElementById('inputRoomCapacity').value = room.capacity;
                 document.getElementById('inputRoomFile').value = '';
+
+                const existingFacs = room.facilities || ['Touchscreen TV', 'Sound System', 'Air Purifier', 'Camera Conf'];
+                document.querySelectorAll('input[name="roomFacilityOpt"]').forEach(cb => {
+                    cb.checked = existingFacs.includes(cb.value);
+                });
 
                 currentUploadedImgData = room.img;
                 document.getElementById('roomPhotoPreview').src = room.img;
@@ -492,6 +714,12 @@
             const name = document.getElementById('inputRoomName').value.trim();
             const capacity = document.getElementById('inputRoomCapacity').value.trim();
             const img = currentUploadedImgData;
+            const facilities = Array.from(document.querySelectorAll('input[name="roomFacilityOpt"]:checked')).map(cb => cb.value);
+
+            if (facilities.length === 0) {
+                alert('Silakan pilih minimal 1 fasilitas ruangan!');
+                return;
+            }
 
             if (!img) {
                 alert('Silakan pilih / unggah foto ruangan dari galeri terlebih dahulu!');
@@ -502,21 +730,123 @@
                 const oldFloorKey = document.getElementById('editRoomFloorGroup').value;
                 if (oldFloorKey !== floorKey) {
                     data[oldFloorKey] = data[oldFloorKey].filter(r => r.id !== roomId);
-                    data[floorKey].push({ id: roomId, name, capacity, img });
+                    data[floorKey].push({ id: roomId, name, capacity, facilities, img });
                 } else {
                     const roomIndex = data[floorKey].findIndex(r => r.id === roomId);
                     if (roomIndex !== -1) {
-                        data[floorKey][roomIndex] = { id: roomId, name, capacity, img };
+                        data[floorKey][roomIndex] = { id: roomId, name, capacity, facilities, img };
                     }
                 }
             } else {
                 const newId = `${floorKey === 'lantai4' ? '4' : '5'}.${Date.now().toString().slice(-2)}`;
-                data[floorKey].push({ id: newId, name, capacity, img });
+                data[floorKey].push({ id: newId, name, capacity, facilities, img });
             }
 
             saveRoomsData(data);
             closeRoomModal();
-            alert('Data ruangan berhasil diperbarui secara real-time!');
+            alert('Data ruangan dan fasilitas berhasil diperbarui secara real-time!');
+        }
+
+        // === LOGIKA LAPORAN BULANAN (MULTI-RUANGAN & UNDUH TABEL CSV) ===
+        function openMonthlyReportModal() {
+            const data = getRoomsData();
+            const allRooms = [...data.lantai4, ...data.lantai5];
+            const container = document.getElementById('reportRoomCheckboxes');
+            container.innerHTML = '';
+
+            allRooms.forEach(room => {
+                container.innerHTML += `
+                    <label class="flex items-center gap-2 bg-white p-2 rounded-lg border border-gray-200 cursor-pointer text-[11px] font-medium text-gray-700">
+                        <input type="checkbox" name="reportRoomItem" value="${room.name}" checked onchange="handleReportRoomCheckChange()" class="w-3.5 h-3.5 rounded text-esdmNavy">
+                        <span class="truncate">${room.name}</span>
+                    </label>
+                `;
+            });
+
+            document.getElementById('selectAllReportRooms').checked = true;
+            renderMonthlyReportTable();
+            document.getElementById('monthlyReportModal').classList.remove('hidden');
+        }
+
+        function closeMonthlyReportModal() {
+            document.getElementById('monthlyReportModal').classList.add('hidden');
+        }
+
+        function toggleAllReportRooms(masterCheckbox) {
+            document.querySelectorAll('input[name="reportRoomItem"]').forEach(cb => {
+                cb.checked = masterCheckbox.checked;
+            });
+            renderMonthlyReportTable();
+        }
+
+        function handleReportRoomCheckChange() {
+            const checkboxes = Array.from(document.querySelectorAll('input[name="reportRoomItem"]'));
+            const allChecked = checkboxes.every(cb => cb.checked);
+            document.getElementById('selectAllReportRooms').checked = allChecked;
+            renderMonthlyReportTable();
+        }
+
+        function getFilteredReportRecords() {
+            const selectedRooms = Array.from(document.querySelectorAll('input[name="reportRoomItem"]:checked')).map(cb => cb.value);
+            return meetingRecords.filter(rec => selectedRooms.includes(rec.roomName));
+        }
+
+        function renderMonthlyReportTable() {
+            const records = getFilteredReportRecords();
+            const tbody = document.getElementById('monthlyReportTableBody');
+            const counter = document.getElementById('reportRowCounter');
+
+            counter.innerText = `${records.length} Data`;
+            tbody.innerHTML = '';
+
+            if (records.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-6 text-center text-gray-400 text-xs">Pilih minimal 1 ruangan untuk menampilkan data laporan.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            records.forEach(rec => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-2.5 px-3 font-bold text-esdmNavy">${rec.id}</td>
+                        <td class="py-2.5 px-3 text-gray-600">${rec.date}</td>
+                        <td class="py-2.5 px-3 font-semibold text-gray-800">${rec.roomName}</td>
+                        <td class="py-2.5 px-3 text-gray-700">${rec.agenda}</td>
+                        <td class="py-2.5 px-3 text-gray-600">${rec.email}</td>
+                        <td class="py-2.5 px-3 text-gray-600">${rec.time}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function downloadReportCSV() {
+            const records = getFilteredReportRecords();
+            if (records.length === 0) {
+                alert('Pilih minimal 1 ruangan terlebih dahulu sebelum mengunduh laporan!');
+                return;
+            }
+
+            const headers = ['ID Reservasi', 'Tanggal', 'Ruangan', 'Agenda Rapat', 'Email Pemohon', 'Waktu'];
+            const rows = records.map(r => [
+                `"${r.id}"`,
+                `"${r.date}"`,
+                `"${r.roomName}"`,
+                `"${r.agenda}"`,
+                `"${r.email}"`,
+                `"${r.time}"`
+            ].join(','));
+
+            const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'Laporan_Bulanan_Ruang_Rapat_BPSDM_ESDM.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>

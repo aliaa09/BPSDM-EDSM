@@ -84,37 +84,38 @@
             </button>
         </div>
 
-        <!-- FILTER BAR -->
+        <!-- FILTER BAR (TANGGAL LAMPAU DIKUNCI & SLOT JAM TUNGGAL) -->
         <div class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-gray-100 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5 md:gap-4 mb-8">
             <div>
                 <label class="block text-[10px] md:text-[11px] font-semibold text-gray-500 uppercase mb-1">Kapasitas</label>
-                <select class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
-                    <option>Semua Kapasitas</option>
-                    <option>15 Orang</option>
-                    <option>30 Orang</option>
-                    <option>80 Orang</option>
+                <select id="filterCapacity" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
+                    <option value="all">Semua Kapasitas</option>
+                    <option value="15">15 Orang</option>
+                    <option value="30">30 Orang</option>
+                    <option value="80">80 Orang</option>
                 </select>
             </div>
             <div>
                 <label class="block text-[10px] md:text-[11px] font-semibold text-gray-500 uppercase mb-1">Tanggal</label>
-                <input type="date" value="2026-11-09" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
+                <input type="date" id="filterDate" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
             </div>
             <div>
                 <label class="block text-[10px] md:text-[11px] font-semibold text-gray-500 uppercase mb-1">Jam Rapat</label>
-                <select class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
-                    <option>Semua Slot Jam (08:00 - 17:00 WIB)</option>
-                    <option>08:00 - 09:00 WIB</option>
-                    <option>09:00 - 10:00 WIB</option>
-                    <option>10:00 - 11:00 WIB</option>
-                    <option>11:00 - 12:00 WIB</option>
-                    <option>13:00 - 14:00 WIB</option>
-                    <option>14:00 - 15:00 WIB</option>
-                    <option>15:00 - 16:00 WIB</option>
-                    <option>16:00 - 17:00 WIB</option>
+                <select id="filterHour" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
+                    <option value="all">Semua Slot Jam</option>
+                    <option value="08:00">08:00 WIB</option>
+                    <option value="09:00">09:00 WIB</option>
+                    <option value="10:00">10:00 WIB</option>
+                    <option value="11:00">11:00 WIB</option>
+                    <option value="12:00">12:00 WIB</option>
+                    <option value="13:00">13:00 WIB</option>
+                    <option value="14:00">14:00 WIB</option>
+                    <option value="15:00">15:00 WIB</option>
+                    <option value="16:00">16:00 WIB</option>
                 </select>
             </div>
             <div class="flex items-end">
-                <button class="w-full bg-esdmNavy hover:bg-blue-900 text-white font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2">
+                <button onclick="renderContent(currentActiveFloor)" class="w-full bg-esdmNavy hover:bg-blue-900 text-white font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
                     <i class="fa-solid fa-magnifying-glass"></i> Cari Ruangan
                 </button>
             </div>
@@ -216,28 +217,74 @@
     <script>
         const defaultRoomsData = {
             lantai4: [
-                { id: '4.1', name: 'Ruang 4.1 Cendrawasih', capacity: '15 Orang', img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=200&fit=crop' },
-                { id: '4.2', name: 'Ruang 4.2 Garuda', capacity: '30 Orang', img: 'https://images.unsplash.com/photo-1517502884422-41eaead166d4?w=400&h=200&fit=crop' }
+                {
+                    id: '4.1',
+                    name: 'Ruang 4.1 Cendrawasih',
+                    capacity: '15 Orang',
+                    facilities: ['Touchscreen TV', 'Sound System', 'Air Purifier', 'Camera Conf'],
+                    img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=200&fit=crop'
+                },
+                {
+                    id: '4.2',
+                    name: 'Ruang 4.2 Garuda',
+                    capacity: '30 Orang',
+                    facilities: ['Projector HD', 'Sound System', 'Air Purifier', 'Wireless Mic'],
+                    img: 'https://images.unsplash.com/photo-1517502884422-41eaead166d4?w=400&h=200&fit=crop'
+                }
             ],
             lantai5: [
-                { id: '5.1', name: 'Ruang 5.1 Dewan Utama', capacity: '80 Orang', img: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=200&fit=crop' },
-                { id: '5.2', name: 'Ruang 5.2 Nusantara', capacity: '30 Orang', img: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=400&h=200&fit=crop' }
+                {
+                    id: '5.1',
+                    name: 'Ruang 5.1 Dewan Utama',
+                    capacity: '80 Orang',
+                    facilities: ['Touchscreen TV', 'Sound System', 'Air Purifier', 'Camera Conf'],
+                    img: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=200&fit=crop'
+                },
+                {
+                    id: '5.2',
+                    name: 'Ruang 5.2 Nusantara',
+                    capacity: '30 Orang',
+                    facilities: ['Touchscreen TV', 'Sound System', 'Wireless Mic', 'Camera Conf'],
+                    img: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=400&h=200&fit=crop'
+                }
             ]
         };
 
-        // Mengambil data ruangan terbaru dari Admin (localStorage)
         function getRoomsData() {
             const stored = localStorage.getItem('customRoomsData');
             return stored ? JSON.parse(stored) : defaultRoomsData;
         }
 
+        function getFacilityIcon(facName) {
+            const map = {
+                'Touchscreen TV': 'fa-tv',
+                'Sound System': 'fa-volume-high',
+                'Air Purifier': 'fa-wind',
+                'Camera Conf': 'fa-video',
+                'Projector HD': 'fa-display',
+                'Wireless Mic': 'fa-microphone'
+            };
+            return map[facName] || 'fa-circle-check';
+        }
+
         let currentActiveFloor = 'lantai4';
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Set tanggal hari ini dan kunci tanggal lampau (disabled / abu-abu di date picker)
+            const dateInput = document.getElementById('filterDate');
+            if (dateInput) {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                const todayStr = `${yyyy}-${mm}-${dd}`;
+                dateInput.min = todayStr;
+                dateInput.value = todayStr;
+            }
+
             initDashboard();
         });
 
-        // Auto-sync jika ada perubahan localStorage dari tab admin
         window.addEventListener('storage', (e) => {
             if (e.key === 'customRoomsData') {
                 renderContent(currentActiveFloor);
@@ -334,13 +381,19 @@
         function renderContent(floor) {
             const matrixContainer = document.getElementById('matrixTableBody');
             const cardsContainer = document.getElementById('roomCardsContainer');
+            const capFilter = document.getElementById('filterCapacity') ? document.getElementById('filterCapacity').value : 'all';
             
             matrixContainer.innerHTML = '';
             cardsContainer.innerHTML = '';
 
             const roomsData = getRoomsData();
+            let rooms = roomsData[floor] || [];
 
-            roomsData[floor].forEach(room => {
+            if (capFilter !== 'all') {
+                rooms = rooms.filter(r => r.capacity.includes(capFilter));
+            }
+
+            rooms.forEach(room => {
                 matrixContainer.innerHTML += `
                     <tr>
                         <td class="text-left py-3 px-4 font-bold text-esdmNavy">${room.name}<br><span class="text-[10px] font-normal text-gray-400">Kapasitas: ${room.capacity}</span></td>
@@ -357,7 +410,11 @@
                     </tr>
                 `;
 
-                // Kirim id & floor key agar gambar Base64 hasil upload terbaca utuh di reservasi.html
+                const facs = room.facilities || ['Touchscreen TV', 'Sound System', 'Air Purifier', 'Camera Conf'];
+                const facilitiesHtml = facs.map(fac => `
+                    <div><i class="fa-solid ${getFacilityIcon(fac)} text-gray-400 mr-1"></i> ${fac}</div>
+                `).join('');
+
                 const bookingUrl = `reservasi.html?id=${encodeURIComponent(room.id)}&floorKey=${encodeURIComponent(floor)}`;
 
                 cardsContainer.innerHTML += `
@@ -368,10 +425,7 @@
                                 <h3 class="font-bold text-esdmNavy text-sm mb-1">${room.name}</h3>
                                 <p class="text-xs text-gray-500 mb-3"><i class="fa-regular fa-user text-[10px]"></i> Kapasitas: ${room.capacity}</p>
                                 <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-600 mb-4">
-                                    <div><i class="fa-solid fa-tv text-gray-400 mr-1"></i> Touchscreen TV</div>
-                                    <div><i class="fa-solid fa-volume-high text-gray-400 mr-1"></i> Sound System</div>
-                                    <div><i class="fa-solid fa-wind text-gray-400 mr-1"></i> Air Purifier</div>
-                                    <div><i class="fa-solid fa-video text-gray-400 mr-1"></i> Camera Conf</div>
+                                    ${facilitiesHtml}
                                 </div>
                             </div>
                         </div>

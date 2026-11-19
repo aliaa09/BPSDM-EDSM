@@ -73,7 +73,7 @@
         
         <div class="mb-6">
             <h1 class="text-xl font-extrabold text-esdmNavy">Riwayat Pemesanan Ruang Rapat</h1>
-            <p class="text-xs text-gray-500 mt-1">Daftar seluruh permohonan reservasi ruang rapat yang telah diajukan.</p>
+            <p class="text-xs text-gray-500 mt-1">Daftar seluruh pemesanan ruang rapat pribadi Anda beserta akses E-Ticket.</p>
         </div>
 
         <div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100">
@@ -94,24 +94,24 @@
                             <td class="py-4 px-4 font-bold text-esdmNavy">#SM-2026-0928</td>
                             <td class="py-4 px-4 text-gray-800 font-bold">Rapat Koordinasi Evaluasi Program Kerja Q1</td>
                             <td class="py-4 px-4 text-gray-600">Ruang 4.1 Cendrawasih</td>
-                            <td class="py-4 px-4 text-gray-600">09 Nov 2026 · 08:00 - 10:00 WIB</td>
+                            <td class="py-4 px-4 text-gray-600">19 Nov 2026 · 08:00 - 09:59 WIB</td>
                             <td class="py-4 px-4">
-                                <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">● Disetujui</span>
+                                <span class="px-2.5 py-1 rounded-full bg-blue-100 text-esdmNavy font-bold text-[10px]">● Terjadwal</span>
                             </td>
                             <td class="py-4 px-4 text-center">
-                                <a href="reservasi.html" class="text-esdmNavy font-bold hover:underline">Lihat E-Ticket</a>
+                                <a href="reservasi.html?id=4.1&floorKey=lantai4" class="text-esdmNavy font-bold hover:underline">Lihat E-Ticket</a>
                             </td>
                         </tr>
                         <tr>
                             <td class="py-4 px-4 font-bold text-esdmNavy">#SM-2026-0812</td>
                             <td class="py-4 px-4 text-gray-800 font-bold">Pengembangan Layanan Digital BPSDM ESDM</td>
                             <td class="py-4 px-4 text-gray-600">Ruang 5.1 Dewan Utama</td>
-                            <td class="py-4 px-4 text-gray-600">20 Okt 2026 · 13:00 - 15:00 WIB</td>
+                            <td class="py-4 px-4 text-gray-600">20 Okt 2026 · 13:00 - 14:59 WIB</td>
                             <td class="py-4 px-4">
                                 <span class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-bold text-[10px]">● Selesai</span>
                             </td>
                             <td class="py-4 px-4 text-center">
-                                <a href="#" class="text-gray-400 font-semibold hover:underline">Arsip</a>
+                                <a href="reservasi.html?id=5.1&floorKey=lantai5" class="text-esdmNavy font-bold hover:underline">Lihat E-Ticket</a>
                             </td>
                         </tr>
                     </tbody>
@@ -138,7 +138,6 @@
             const userNameEl = document.getElementById('userName');
             const userAvatarEl = document.getElementById('userAvatarHeader');
 
-            // INJEKSI PANEL ADMIN DI HEADER JIKA USER ADALAH ADMIN
             const navContainer = document.querySelector('header nav');
             if (role === 'admin_rt' && navContainer && !document.getElementById('adminNavLink')) {
                 const adminLink = document.createElement('a');
