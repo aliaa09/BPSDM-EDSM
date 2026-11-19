@@ -56,7 +56,7 @@
     </header>
 
     <!-- MENU BOTTOM BAR (MOBILE ONLY) -->
-    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 flex justify-around py-2 shadow-lg">
+    <div id="mobileBottomNav" class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40 flex justify-around py-2 shadow-lg">
         <a href="beranda.html" class="flex flex-col items-center text-gray-500 hover:text-esdmNavy text-[10px] font-medium">
             <i class="fa-solid fa-house text-base mb-0.5"></i> Dashboard
         </a>
@@ -166,7 +166,7 @@
             const savedPos = localStorage.getItem('profilePos') || 'Staf Analis Kebijakan';
             const savedAvatar = localStorage.getItem('customAvatar');
 
-            // INJEKSI PANEL ADMIN DI HEADER JIKA USER ADALAH ADMIN
+            // INJEKSI PANEL ADMIN DI HEADER DESKTOP JIKA USER ADALAH ADMIN
             const navContainer = document.querySelector('header nav');
             if (role === 'admin_rt' && navContainer && !document.getElementById('adminNavLink')) {
                 const adminLink = document.createElement('a');
@@ -180,6 +180,23 @@
                     navContainer.insertBefore(adminLink, profilLink);
                 } else {
                     navContainer.appendChild(adminLink);
+                }
+            }
+
+            // INJEKSI PANEL ADMIN DI BOTTOM BAR MOBILE (HP / TABLET) JIKA USER ADALAH ADMIN
+            const mobileNav = document.getElementById('mobileBottomNav');
+            if (role === 'admin_rt' && mobileNav && !document.getElementById('mobileAdminNavLink')) {
+                const mobileAdminLink = document.createElement('a');
+                mobileAdminLink.id = 'mobileAdminNavLink';
+                mobileAdminLink.href = 'admin.html';
+                mobileAdminLink.className = 'flex flex-col items-center text-gray-500 hover:text-esdmNavy text-[10px] font-medium';
+                mobileAdminLink.innerHTML = '<i class="fa-solid fa-user-shield text-base mb-0.5"></i> Panel Admin';
+
+                const mobileProfilLink = Array.from(mobileNav.children).find(el => el.getAttribute('href') === 'profil.html');
+                if (mobileProfilLink) {
+                    mobileNav.insertBefore(mobileAdminLink, mobileProfilLink);
+                } else {
+                    mobileNav.appendChild(mobileAdminLink);
                 }
             }
 
