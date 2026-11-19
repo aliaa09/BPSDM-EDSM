@@ -26,15 +26,15 @@
         }
     </script>
 </head>
-<body class="bg-[#F8FAFC] font-sans text-esdmDark min-h-screen flex items-center justify-center p-6">
+<body class="bg-[#F8FAFC] font-sans text-esdmDark min-h-screen flex items-center justify-center p-4 sm:p-6">
 
     <!-- CONTAINER UTAMA -->
     <div class="max-w-5xl w-full bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden grid grid-cols-1 md:grid-cols-2">
         
         <!-- SISI KIRI: BRANDING & DESKRIPSI -->
-        <div class="p-10 md:p-14 flex flex-col justify-between bg-gradient-to-br from-white via-blue-50/30 to-blue-100/20">
+        <div class="p-8 sm:p-10 md:p-14 flex flex-col justify-between bg-gradient-to-br from-white via-blue-50/30 to-blue-100/20">
             <div>
-                <div class="flex items-center gap-3 mb-8">
+                <div class="flex items-center gap-3 mb-6 md:mb-8">
                     <img src="img/logo-esdm.png" alt="Logo ESDM" class="w-10 h-10 object-contain">
                     <div>
                         <h1 class="text-sm font-bold text-esdmNavy tracking-wide">Smart Meeting BPSDM ESDM</h1>
@@ -45,7 +45,7 @@
                 <div class="inline-block px-3 py-1 rounded-full bg-esdmYellow/20 text-esdmNavy text-xs font-bold mb-4">
                     LAYANAN KEDINASAN TERPADU
                 </div>
-                <h2 class="text-3xl font-extrabold text-esdmNavy leading-tight mb-4">
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-esdmNavy leading-tight mb-3 md:mb-4">
                     Sistem Reservasi Ruang Rapat Berbasis Privasi DEN & BPSDM ESDM
                 </h2>
                 <p class="text-xs text-gray-600 leading-relaxed">
@@ -53,13 +53,14 @@
                 </p>
             </div>
 
-            <div class="pt-8 border-t border-gray-200/60 text-[11px] text-gray-400">
+            <!-- COPYRIGHT DESKTOP ONLY -->
+            <div class="hidden md:block pt-8 border-t border-gray-200/60 text-[11px] text-gray-400">
                 © 2026 Badan Pengembangan Sumber Daya Manusia ESDM. All rights reserved.
             </div>
         </div>
 
         <!-- SISI KANAN: FORM MASUK / DAFTAR -->
-        <div class="p-10 md:p-12 bg-white flex flex-col justify-center">
+        <div class="p-8 sm:p-10 md:p-12 bg-white flex flex-col justify-center">
             
             <!-- VIEW 1: FORM LOGIN MASUK -->
             <div id="loginFormView">
@@ -186,6 +187,11 @@
                 </div>
             </div>
 
+        </div>
+
+        <!-- COPYRIGHT MOBILE ONLY (PALING BAWAH DI HP) -->
+        <div class="md:hidden px-8 py-5 bg-gray-50/70 border-t border-gray-100 text-center text-[11px] text-gray-400">
+            © 2026 Badan Pengembangan Sumber Daya Manusia ESDM. All rights reserved.
         </div>
 
     </div>
@@ -340,11 +346,7 @@
             localStorage.setItem('userRole', role);
             localStorage.setItem('profileUnit', unit);
 
-            if (role === 'admin_rt') {
-                window.location.href = 'admin.html';
-            } else {
-                window.location.href = 'beranda.html';
-            }
+            window.location.href = 'beranda.html';
         }
 
         function openGoogleChooser() {
@@ -428,12 +430,7 @@
             localStorage.setItem('profileUnit', unit);
 
             closeGoogleChooser();
-            
-            if (role === 'admin_rt') {
-                window.location.href = 'admin.html';
-            } else {
-                window.location.href = 'beranda.html';
-            }
+            window.location.href = 'beranda.html';
         }
     </script>
 </body>
