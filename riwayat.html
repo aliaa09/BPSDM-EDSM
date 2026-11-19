@@ -71,14 +71,19 @@
     <!-- KONTEN UTAMA RIWAYAT -->
     <main class="max-w-7xl w-full mx-auto px-4 md:px-8 py-6 md:py-8 flex-grow mb-14 md:mb-0">
         
-        <div class="mb-6">
-            <h1 class="text-xl font-extrabold text-esdmNavy">Riwayat Pemesanan Ruang Rapat</h1>
-            <p class="text-xs text-gray-500 mt-1">Daftar seluruh pemesanan ruang rapat pribadi Anda beserta akses E-Ticket.</p>
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-6">
+            <div>
+                <h1 class="text-xl font-extrabold text-esdmNavy">Riwayat Pemesanan Ruang Rapat</h1>
+                <p class="text-xs text-gray-500 mt-1">Daftar seluruh pemesanan ruang rapat pribadi Anda beserta akses E-Ticket dan pembatalan jadwal.</p>
+            </div>
+            <button onclick="resetDemoHistory()" class="self-start sm:self-auto text-[11px] font-semibold text-gray-400 hover:text-esdmNavy underline">
+                Reset Data Demo
+            </button>
         </div>
 
         <div class="bg-white rounded-2xl p-4 md:p-6 shadow-sm border border-gray-100">
             <div class="overflow-x-auto border border-gray-100 rounded-xl">
-                <table class="w-full text-left text-xs min-w-[650px]">
+                <table class="w-full text-left text-xs min-w-[720px]">
                     <thead>
                         <tr class="bg-gray-50 text-gray-500 font-semibold border-b border-gray-100">
                             <th class="py-3 px-4">ID RESERVASI</th>
@@ -89,31 +94,7 @@
                             <th class="py-3 px-4 text-center">AKSI</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 font-medium">
-                        <tr>
-                            <td class="py-4 px-4 font-bold text-esdmNavy">#SM-2026-0928</td>
-                            <td class="py-4 px-4 text-gray-800 font-bold">Rapat Koordinasi Evaluasi Program Kerja Q1</td>
-                            <td class="py-4 px-4 text-gray-600">Ruang 4.1 Cendrawasih</td>
-                            <td class="py-4 px-4 text-gray-600">19 Nov 2026 · 08:00 - 09:59 WIB</td>
-                            <td class="py-4 px-4">
-                                <span class="px-2.5 py-1 rounded-full bg-blue-100 text-esdmNavy font-bold text-[10px]">● Terjadwal</span>
-                            </td>
-                            <td class="py-4 px-4 text-center">
-                                <a href="reservasi.html?id=4.1&floorKey=lantai4" class="text-esdmNavy font-bold hover:underline">Lihat E-Ticket</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="py-4 px-4 font-bold text-esdmNavy">#SM-2026-0812</td>
-                            <td class="py-4 px-4 text-gray-800 font-bold">Pengembangan Layanan Digital BPSDM ESDM</td>
-                            <td class="py-4 px-4 text-gray-600">Ruang 5.1 Dewan Utama</td>
-                            <td class="py-4 px-4 text-gray-600">20 Okt 2026 · 13:00 - 14:59 WIB</td>
-                            <td class="py-4 px-4">
-                                <span class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-bold text-[10px]">● Selesai</span>
-                            </td>
-                            <td class="py-4 px-4 text-center">
-                                <a href="reservasi.html?id=5.1&floorKey=lantai5" class="text-esdmNavy font-bold hover:underline">Lihat E-Ticket</a>
-                            </td>
-                        </tr>
+                    <tbody id="historyTableBody" class="divide-y divide-gray-100 font-medium">
                     </tbody>
                 </table>
             </div>
@@ -121,12 +102,147 @@
 
     </main>
 
+    <!-- MODAL KONFIRMASI PEMBATALAN RESERVASI -->
+    <div id="cancelModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                <h3 class="text-sm font-bold text-red-600 flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Batalkan Reservasi Ruang Rapat
+                </h3>
+                <button onclick="closeCancelModal()" class="text-gray-400 hover:text-gray-600 text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="bg-red-50/70 border border-red-100 rounded-xl p-3.5 text-xs space-y-1">
+                <p class="text-gray-500">Reservasi yang akan dibatalkan:</p>
+                <p id="cancelBookingTitle" class="font-bold text-esdmNavy">#SM-2026-0928 — Rapat Koordinasi</p>
+                <p id="cancelBookingTime" class="text-[11px] text-gray-600">Ruang 4.1 Cendrawasih · 19 Nov 2026</p>
+            </div>
+
+            <form onsubmit="confirmCancelBooking(event)" class="space-y-3 text-xs">
+                <input type="hidden" id="cancelTargetId">
+
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">Alasan Pembatalan <span class="text-red-500">*</span></label>
+                    <textarea id="cancelReasonInput" rows="3" required placeholder="Contoh: Agenda rapat dijadwalkan ulang ke minggu depan" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-red-500"></textarea>
+                </div>
+
+                <p class="text-[10px] text-gray-400">
+                    Slot jam ruangan akan otomatis dibuka kembali untuk pemohon lain setelah dibatalkan.
+                </p>
+
+                <div class="pt-2 flex justify-end gap-2 border-t border-gray-100">
+                    <button type="button" onclick="closeCancelModal()" class="px-4 py-2 rounded-xl bg-gray-100 text-gray-600 font-semibold text-xs hover:bg-gray-200 transition-colors">
+                        Kembali
+                    </button>
+                    <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs transition-colors shadow-sm">
+                        Ya, Batalkan Jadwal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL INFO DETAIL PEMBATALAN -->
+    <div id="cancelDetailModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                <h3 class="text-sm font-bold text-esdmNavy">Informasi Pembatalan Reservasi</h3>
+                <button onclick="closeCancelDetailModal()" class="text-gray-400 hover:text-gray-600 text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-2.5 text-xs">
+                <div class="flex justify-between">
+                    <span class="text-gray-500">ID Reservasi:</span>
+                    <span id="detailCancelId" class="font-bold text-esdmNavy">#SM-2026-0928</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Status:</span>
+                    <span class="px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold text-[10px]">● Dibatalkan</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Waktu Pembatalan:</span>
+                    <span id="detailCancelDate" class="font-semibold text-gray-700">-</span>
+                </div>
+                <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 mt-2">
+                    <p class="text-[11px] font-semibold text-gray-500 mb-1">Alasan Pembatalan:</p>
+                    <p id="detailCancelReason" class="text-gray-800 font-medium italic">-</p>
+                </div>
+            </div>
+
+            <div class="pt-2 flex justify-end border-t border-gray-100">
+                <button type="button" onclick="closeCancelDetailModal()" class="px-5 py-2 rounded-xl bg-esdmNavy text-white font-bold text-xs hover:bg-blue-900 transition-colors">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
     <footer class="bg-white border-t border-gray-100 px-4 md:px-10 py-4 md:py-6 text-center text-xs text-gray-500 flex flex-col md:flex-row justify-between items-center gap-2">
         <p>Badan Pengembangan Sumber Daya Manusia ESDM</p>
         <p>© 2026 Smart Meeting BPSDM ESDM. All rights reserved.</p>
     </footer>
 
     <script>
+        const defaultUserHistory = [
+            {
+                id: '#SM-2026-0928',
+                agenda: 'Rapat Koordinasi Evaluasi Program Kerja Q1',
+                room: 'Ruang 4.1 Cendrawasih',
+                roomId: '4.1',
+                floorKey: 'lantai4',
+                dateTime: '19 Nov 2026 · 08:00 - 09:59 WIB',
+                status: 'Terjadwal',
+                cancelReason: '',
+                canceledAt: ''
+            },
+            {
+                id: '#SM-2026-0915',
+                agenda: 'Sosialisasi Sistem Reservasi Smart Meeting DEN',
+                room: 'Ruang 4.2 Garuda',
+                roomId: '4.2',
+                floorKey: 'lantai4',
+                dateTime: '24 Nov 2026 · 10:00 - 11:59 WIB',
+                status: 'Terjadwal',
+                cancelReason: '',
+                canceledAt: ''
+            },
+            {
+                id: '#SM-2026-0812',
+                agenda: 'Pengembangan Layanan Digital BPSDM ESDM',
+                room: 'Ruang 5.1 Dewan Utama',
+                roomId: '5.1',
+                floorKey: 'lantai5',
+                dateTime: '20 Okt 2026 · 13:00 - 14:59 WIB',
+                status: 'Selesai',
+                cancelReason: '',
+                canceledAt: ''
+            }
+        ];
+
+        function getHistoryData() {
+            const stored = localStorage.getItem('userBookingHistory');
+            if (stored) {
+                return JSON.parse(stored);
+            } else {
+                localStorage.setItem('userBookingHistory', JSON.stringify(defaultUserHistory));
+                return defaultUserHistory;
+            }
+        }
+
+        function saveHistoryData(data) {
+            localStorage.setItem('userBookingHistory', JSON.stringify(data));
+            renderHistoryTable();
+        }
+
+        function resetDemoHistory() {
+            localStorage.setItem('userBookingHistory', JSON.stringify(defaultUserHistory));
+            renderHistoryTable();
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const role = localStorage.getItem('userRole') || 'internal';
             const savedName = localStorage.getItem('profileName') || 'Amalia Zuliasri';
@@ -167,7 +283,105 @@
                 if(portalBadge) portalBadge.innerText = 'Portal Internal DEN';
                 if(userRoleBadge) userRoleBadge.innerText = 'Pegawai Internal DEN';
             }
+
+            renderHistoryTable();
         });
+
+        function renderHistoryTable() {
+            const list = getHistoryData();
+            const tbody = document.getElementById('historyTableBody');
+            tbody.innerHTML = '';
+
+            list.forEach(item => {
+                let statusBadge = '';
+                let actionHtml = '';
+
+                if (item.status === 'Terjadwal') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full bg-blue-100 text-esdmNavy font-bold text-[10px]">● Terjadwal</span>`;
+                    actionHtml = `
+                        <div class="flex items-center justify-center gap-3">
+                            <a href="reservasi.html?id=${encodeURIComponent(item.roomId)}&floorKey=${encodeURIComponent(item.floorKey)}" class="text-esdmNavy font-bold hover:underline">Lihat E-Ticket</a>
+                            <span class="text-gray-300">|</span>
+                            <button onclick="openCancelModal('${item.id}')" class="text-red-600 font-bold hover:underline flex items-center gap-1">
+                                <i class="fa-solid fa-ban text-[10px]"></i> Batalkan
+                            </button>
+                        </div>
+                    `;
+                } else if (item.status === 'Dibatalkan') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full bg-red-100 text-red-700 font-bold text-[10px]">● Dibatalkan</span>`;
+                    actionHtml = `
+                        <button onclick="openCancelDetailModal('${item.id}')" class="text-gray-500 font-semibold hover:text-esdmNavy hover:underline">
+                            Alasan Pembatalan
+                        </button>
+                    `;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-bold text-[10px]">● Selesai</span>`;
+                    actionHtml = `
+                        <a href="reservasi.html?id=${encodeURIComponent(item.roomId)}&floorKey=${encodeURIComponent(item.floorKey)}" class="text-esdmNavy font-bold hover:underline">Lihat E-Ticket</a>
+                    `;
+                }
+
+                tbody.innerHTML += `
+                    <tr class="${item.status === 'Dibatalkan' ? 'bg-red-50/20' : ''}">
+                        <td class="py-4 px-4 font-bold text-esdmNavy">${item.id}</td>
+                        <td class="py-4 px-4 text-gray-800 font-bold">${item.agenda}</td>
+                        <td class="py-4 px-4 text-gray-600">${item.room}</td>
+                        <td class="py-4 px-4 text-gray-600">${item.dateTime}</td>
+                        <td class="py-4 px-4">${statusBadge}</td>
+                        <td class="py-4 px-4 text-center">${actionHtml}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function openCancelModal(bookingId) {
+            const list = getHistoryData();
+            const item = list.find(b => b.id === bookingId);
+            if (!item) return;
+
+            document.getElementById('cancelTargetId').value = item.id;
+            document.getElementById('cancelBookingTitle').innerText = `${item.id} — ${item.agenda}`;
+            document.getElementById('cancelBookingTime').innerText = `${item.room} · ${item.dateTime}`;
+            document.getElementById('cancelReasonInput').value = '';
+            document.getElementById('cancelModal').classList.remove('hidden');
+        }
+
+        function closeCancelModal() {
+            document.getElementById('cancelModal').classList.add('hidden');
+        }
+
+        function confirmCancelBooking(event) {
+            event.preventDefault();
+            const targetId = document.getElementById('cancelTargetId').value;
+            const reason = document.getElementById('cancelReasonInput').value.trim();
+
+            const list = getHistoryData();
+            const idx = list.findIndex(b => b.id === targetId);
+            if (idx !== -1) {
+                list[idx].status = 'Dibatalkan';
+                list[idx].cancelReason = reason;
+                list[idx].canceledAt = '19 Nov 2026, 11:05 WIB';
+                saveHistoryData(list);
+            }
+
+            closeCancelModal();
+            alert('Reservasi berhasil dibatalkan. Slot jam ruangan telah dibuka kembali.');
+        }
+
+        function openCancelDetailModal(bookingId) {
+            const list = getHistoryData();
+            const item = list.find(b => b.id === bookingId);
+            if (!item) return;
+
+            document.getElementById('detailCancelId').innerText = item.id;
+            document.getElementById('detailCancelDate').innerText = item.canceledAt || '19 Nov 2026';
+            document.getElementById('detailCancelReason').innerText = item.cancelReason || '-';
+            document.getElementById('cancelDetailModal').classList.remove('hidden');
+        }
+
+        function closeCancelDetailModal() {
+            document.getElementById('cancelDetailModal').classList.add('hidden');
+        }
     </script>
 </body>
 </html>
