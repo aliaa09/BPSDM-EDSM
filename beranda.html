@@ -84,11 +84,11 @@
             </button>
         </div>
 
-        <!-- FILTER BAR (TANGGAL LAMPAU DIKUNCI & SLOT JAM TUNGGAL) -->
+        <!-- FILTER BAR -->
         <div class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-gray-100 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5 md:gap-4 mb-8">
             <div>
                 <label class="block text-[10px] md:text-[11px] font-semibold text-gray-500 uppercase mb-1">Kapasitas</label>
-                <select id="filterCapacity" onchange="renderContent(currentActiveFloor)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
+                <select id="filterCapacity" onchange="applyFilters()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
                     <option value="all">Semua Kapasitas</option>
                     <option value="15">15 Orang</option>
                     <option value="30">30 Orang</option>
@@ -97,11 +97,11 @@
             </div>
             <div>
                 <label class="block text-[10px] md:text-[11px] font-semibold text-gray-500 uppercase mb-1">Tanggal</label>
-                <input type="date" id="filterDate" onchange="renderContent(currentActiveFloor)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
+                <input type="date" id="filterDate" onchange="applyFilters()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
             </div>
             <div>
                 <label class="block text-[10px] md:text-[11px] font-semibold text-gray-500 uppercase mb-1">Jam Rapat</label>
-                <select id="filterHour" onchange="renderContent(currentActiveFloor)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
+                <select id="filterHour" onchange="applyFilters()" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
                     <option value="all">Semua Slot Jam</option>
                     <option value="08:00">08:00 WIB</option>
                     <option value="09:00">09:00 WIB</option>
@@ -116,7 +116,7 @@
                 </select>
             </div>
             <div class="flex items-end">
-                <button onclick="renderContent(currentActiveFloor)" class="w-full bg-esdmNavy hover:bg-blue-900 text-white font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
+                <button type="button" onclick="applyFilters()" class="w-full bg-esdmNavy hover:bg-blue-900 text-white font-semibold py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition-colors">
                     <i class="fa-solid fa-magnifying-glass"></i> Cari Ruangan
                 </button>
             </div>
@@ -137,10 +137,8 @@
 
             <div class="overflow-x-auto border border-gray-100 rounded-xl">
                 <table class="w-full text-center text-xs min-w-[650px]">
-                    <thead id="matrixTableHead">
-                    </thead>
-                    <tbody id="matrixTableBody" class="divide-y divide-gray-50 font-medium">
-                    </tbody>
+                    <thead id="matrixTableHead"></thead>
+                    <tbody id="matrixTableBody" class="divide-y divide-gray-50 font-medium"></tbody>
                 </table>
             </div>
         </div>
@@ -149,12 +147,11 @@
         <div class="mb-12">
             <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-4">
                 <h2 id="cardsSectionTitle" class="text-sm md:text-base font-bold text-esdmNavy">Daftar Ruang Rapat Tersedia</h2>
-                <button id="resetFilterBtn" onclick="resetFilters()" class="hidden text-xs font-semibold text-esdmNavy hover:underline self-start sm:self-auto">
+                <button type="button" id="resetFilterBtn" onclick="resetFilters()" class="hidden text-xs font-semibold text-esdmNavy hover:underline self-start sm:self-auto">
                     <i class="fa-solid fa-rotate-left text-[10px] mr-1"></i> Reset Filter
                 </button>
             </div>
-            <div id="roomCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            </div>
+            <div id="roomCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"></div>
         </div>
 
         <!-- PUBLIC INSIGHT ANALYTICS -->
@@ -183,8 +180,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 <div>
                     <h3 class="text-xs font-bold text-gray-700 uppercase mb-4">Tingkat Okupansi Ruangan (%)</h3>
-                    <div id="occupancyListContainer" class="space-y-3.5 text-xs">
-                    </div>
+                    <div id="occupancyListContainer" class="space-y-3.5 text-xs"></div>
                 </div>
 
                 <div>
@@ -219,12 +215,12 @@
     <script>
         const timeSlots = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
 
-        // Jadwal okupansi per ruangan agar filter slot jam realistis
+        // Jadwal sibuk berbeda tiap ruangan agar filter jam menghasilkan variasi ruangan yang tersedia
         const roomOccupiedMap = {
             '4.1': ['09:00', '11:00', '15:00'],
-            '4.2': ['09:00', '11:00', '15:00'],
+            '4.2': ['10:00', '13:00', '16:00'],
             '5.1': ['08:00', '10:00', '14:00'],
-            '5.2': ['11:00', '13:00', '16:00']
+            '5.2': ['09:00', '12:00', '15:00']
         };
 
         const defaultRoomsData = {
@@ -315,7 +311,6 @@
             const infoBannerText = document.getElementById('infoBannerText');
             const floorTabContainer = document.getElementById('floorTabContainer');
 
-            // Inject Panel Admin di Navbar Desktop
             const navContainer = document.querySelector('header nav');
             if (role === 'admin_rt' && navContainer && !document.getElementById('adminNavLink')) {
                 const adminLink = document.createElement('a');
@@ -332,7 +327,6 @@
                 }
             }
 
-            // Inject Panel Admin di Bottom Bar Mobile (HP / Tablet)
             const mobileNav = document.getElementById('mobileBottomNav');
             if (role === 'admin_rt' && mobileNav && !document.getElementById('mobileAdminNavLink')) {
                 const mobileAdminLink = document.createElement('a');
@@ -407,6 +401,10 @@
             renderContent(floor);
         }
 
+        function applyFilters() {
+            renderContent(currentActiveFloor);
+        }
+
         function resetFilters() {
             document.getElementById('filterCapacity').value = 'all';
             document.getElementById('filterHour').value = 'all';
@@ -421,32 +419,29 @@
             const cardsSectionTitle = document.getElementById('cardsSectionTitle');
             const resetFilterBtn = document.getElementById('resetFilterBtn');
 
-            const capFilter = document.getElementById('filterCapacity') ? document.getElementById('filterCapacity').value : 'all';
-            const hourFilter = document.getElementById('filterHour') ? document.getElementById('filterHour').value : 'all';
-            const dateFilter = document.getElementById('filterDate') ? document.getElementById('filterDate').value : '';
+            const capFilter = document.getElementById('filterCapacity').value;
+            const hourFilter = document.getElementById('filterHour').value;
+            const dateFilter = document.getElementById('filterDate').value;
 
-            // Tampilkan tombol Reset Filter jika ada filter aktif
             if (capFilter !== 'all' || hourFilter !== 'all') {
                 resetFilterBtn.classList.remove('hidden');
             } else {
                 resetFilterBtn.classList.add('hidden');
             }
 
-            // Update subjudul sesuai filter yang dipilih
             if (hourFilter !== 'all') {
-                matrixSubtitle.innerText = `Menampilkan status ketersediaan khusus pada pukul ${hourFilter} WIB (${dateFilter})`;
+                matrixSubtitle.innerText = `Filter Aktif: Hanya menampilkan jadwal & ruangan pada pukul ${hourFilter} WIB (${dateFilter})`;
                 cardsSectionTitle.innerText = `Daftar Ruang Rapat Tersedia (${hourFilter} WIB)`;
             } else {
                 matrixSubtitle.innerText = 'Pemantauan ketersediaan slot jam secara langsung';
                 cardsSectionTitle.innerText = 'Daftar Ruang Rapat Tersedia';
             }
 
-            // Filter kolom header jam di matriks
             const displayedSlots = hourFilter === 'all' ? timeSlots : [hourFilter];
             matrixHead.innerHTML = `
                 <tr class="bg-gray-50 text-gray-400 font-semibold border-b border-gray-100">
                     <th class="text-left py-3 px-4">Ruangan</th>
-                    ${displayedSlots.map(slot => `<th class="py-3 ${hourFilter !== 'all' ? 'text-esdmNavy font-bold bg-blue-50/60' : ''}">${slot}</th>`).join('')}
+                    ${displayedSlots.map(slot => `<th class="py-3 ${hourFilter !== 'all' ? 'text-esdmNavy font-bold bg-blue-50/70' : ''}">${slot}</th>`).join('')}
                 </tr>
             `;
 
@@ -466,7 +461,7 @@
                 const occupiedList = roomOccupiedMap[room.id] || ['09:00', '11:00', '15:00'];
                 const isAvailableAtSelectedHour = hourFilter === 'all' || !occupiedList.includes(hourFilter);
 
-                // Render baris di tabel Jadwal Real-Time
+                // Baris tabel jadwal
                 const slotsCellsHtml = displayedSlots.map(slot => {
                     const isUsed = occupiedList.includes(slot);
                     const highlightBg = hourFilter !== 'all' ? 'bg-blue-50/30' : '';
@@ -482,7 +477,7 @@
                     </tr>
                 `;
 
-                // Render kartu ruangan hanya jika tersedia pada jam yang difilter
+                // Kartu ruangan di bawah hanya menampilkan ruangan yang TERSEDIA pada jam yang dipilih
                 if (isAvailableAtSelectedHour) {
                     availableRoomCount++;
                     const facs = room.facilities || ['Touchscreen TV', 'Sound System', 'Air Purifier', 'Camera Conf'];
@@ -490,9 +485,12 @@
                         <div><i class="fa-solid ${getFacilityIcon(fac)} text-gray-400 mr-1"></i> ${fac}</div>
                     `).join('');
 
-                    const bookingUrl = `reservasi.html?id=${encodeURIComponent(room.id)}&floorKey=${encodeURIComponent(floor)}`;
+                    const hourParam = hourFilter !== 'all' ? `&hour=${encodeURIComponent(hourFilter)}` : '';
+                    const dateParam = dateFilter ? `&date=${encodeURIComponent(dateFilter)}` : '';
+                    const bookingUrl = `reservasi.html?id=${encodeURIComponent(room.id)}&floorKey=${encodeURIComponent(floor)}${hourParam}${dateParam}`;
+
                     const slotBadgeHtml = hourFilter !== 'all'
-                        ? `<span class="inline-block px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold mb-1.5">● Tersedia ${hourFilter} WIB</span>`
+                        ? `<span class="inline-block px-2.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold mb-1.5">● Tersedia ${hourFilter} WIB</span>`
                         : '';
 
                     cardsContainer.innerHTML += `
@@ -518,7 +516,6 @@
                 }
             });
 
-            // Jika tidak ada ruangan yang cocok dengan filter
             if (rooms.length === 0) {
                 matrixContainer.innerHTML = `
                     <tr>
@@ -533,10 +530,10 @@
                 cardsContainer.innerHTML = `
                     <div class="col-span-full bg-white rounded-2xl p-8 text-center border border-gray-100 shadow-sm">
                         <i class="fa-regular fa-calendar-xmark text-3xl text-gray-300 mb-2"></i>
-                        <p class="text-sm font-bold text-esdmNavy">Tidak Ada Ruangan Tersedia</p>
-                        <p class="text-xs text-gray-500 mt-1">Seluruh ruangan pada filter kapasitas/jam yang dipilih sedang dipakai. Silakan pilih slot jam atau lantai lain.</p>
-                        <button onclick="resetFilters()" class="mt-4 px-4 py-2 rounded-xl bg-esdmNavy text-white text-xs font-semibold hover:bg-blue-900 transition-colors">
-                            Tampilkan Semua Ruangan
+                        <p class="text-sm font-bold text-esdmNavy">Tidak Ada Ruangan Tersedia pada Pukul ${hourFilter} WIB</p>
+                        <p class="text-xs text-gray-500 mt-1">Seluruh ruangan pada filter yang dipilih sedang dipakai. Silakan pilih slot jam atau lantai lain.</p>
+                        <button type="button" onclick="resetFilters()" class="mt-4 px-4 py-2 rounded-xl bg-esdmNavy text-white text-xs font-semibold hover:bg-blue-900 transition-colors">
+                            Tampilkan Semua Jam
                         </button>
                     </div>
                 `;
