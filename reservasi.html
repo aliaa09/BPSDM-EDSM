@@ -28,7 +28,7 @@
 
     <style>
         @media print {
-* { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             body { background: white !important; margin: 0 !important; padding: 0 !important; }
             header, footer, #mobileBottomNav, main > a, #roomSummaryBox, #stepperBox, #stepSection1, #stepSection2 { display: none !important; }
             main { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
@@ -431,6 +431,44 @@
             }
         }
 
+        function checkDirectETicketMode() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('mode') !== 'eticket') return;
+
+            const bookingId = params.get('bookingId');
+            const historyList = JSON.parse(localStorage.getItem('userBookingHistory') || '[]');
+            const booking = historyList.find(b => b.id === bookingId);
+
+            // Ubah link kembali di pojok kiri atas mengarah ke Riwayat
+            const backLink = document.querySelector('main > a');
+            if (backLink) {
+                backLink.href = 'riwayat.html';
+                backLink.innerHTML = '<i class="fa-solid fa-arrow-left text-[10px]"></i> Kembali ke Riwayat Pemesanan';
+            }
+
+            // Langsung tampilkan Step 3 (E-Ticket)
+            goToStep(3);
+
+            // Ubah header banner Step 3 agar sesuai konteks "Lihat E-Ticket"
+            const step3Title = document.querySelector('#stepSection3 h3');
+            const step3Sub = document.querySelector('#stepSection3 > div:nth-child(2) p');
+            if (step3Title) step3Title.innerText = 'Detail Bukti Reservasi (E-Ticket)';
+            if (step3Sub) step3Sub.innerText = 'Berikut dokumen E-Ticket resmi untuk jadwal ruang rapat Anda.';
+
+            // Isi data tiket sesuai riwayat yang diklik
+            if (booking) {
+                const ticketCodeEl = document.querySelector('#ticketPdfContent h3');
+                if (ticketCodeEl) ticketCodeEl.innerText = booking.id;
+
+                document.getElementById('summaryRoom').innerText = booking.room;
+                document.getElementById('summaryAgenda').innerText = booking.agenda;
+
+                const parts = booking.dateTime.split('·');
+                document.getElementById('summaryDate').innerText = parts[0] ? parts[0].trim() : booking.dateTime;
+                document.getElementById('summaryTime').innerText = parts[1] ? parts[1].trim() : '-';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const role = localStorage.getItem('userRole') || 'internal';
             const savedName = localStorage.getItem('profileName') || 'Amalia Zuliasri';
@@ -492,6 +530,7 @@
 
             loadSelectedRoomData();
             renderInteractiveSlots();
+            checkDirectETicketMode();
         });
 
         // Auto-sync jika admin mengedit foto ruangan saat halaman reservasi terbuka

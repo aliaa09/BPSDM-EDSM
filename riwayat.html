@@ -318,7 +318,7 @@
                     statusBadge = `<span class="px-2.5 py-1 rounded-full bg-blue-100 text-esdmNavy font-bold text-[10px]">● Terjadwal</span>`;
                     actionHtml = `
                         <div class="flex items-center justify-center gap-3">
-                            <a href="reservasi.html?id=${encodeURIComponent(item.roomId)}&floorKey=${encodeURIComponent(item.floorKey)}" class="text-esdmNavy font-bold hover:underline">Lihat E-Ticket</a>
+                            <a href="reservasi.html?id=${encodeURIComponent(item.roomId)}&floorKey=${encodeURIComponent(item.floorKey)}&mode=eticket&bookingId=${encodeURIComponent(item.id)}" class="text-esdmNavy font-bold hover:underline">Lihat E-Ticket</a>
                             <span class="text-gray-300">|</span>
                             <button onclick="openCancelModal('${item.id}')" class="text-red-600 font-bold hover:underline flex items-center gap-1">
                                 <i class="fa-solid fa-ban text-[10px]"></i> Batalkan
@@ -335,7 +335,7 @@
                 } else {
                     statusBadge = `<span class="px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 font-bold text-[10px]">● Selesai</span>`;
                     actionHtml = `
-                        <a href="reservasi.html?id=${encodeURIComponent(item.roomId)}&floorKey=${encodeURIComponent(item.floorKey)}" class="text-esdmNavy font-bold hover:underline">Lihat E-Ticket</a>
+                        <a href="reservasi.html?id=${encodeURIComponent(item.roomId)}&floorKey=${encodeURIComponent(item.floorKey)}&mode=eticket&bookingId=${encodeURIComponent(item.id)}" class="text-esdmNavy font-bold hover:underline">Lihat E-Ticket</a>
                     `;
                 }
 
