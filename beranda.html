@@ -88,7 +88,7 @@
         <div class="bg-white rounded-2xl p-4 md:p-5 shadow-sm border border-gray-100 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5 md:gap-4 mb-8">
             <div>
                 <label class="block text-[10px] md:text-[11px] font-semibold text-gray-500 uppercase mb-1">Kapasitas</label>
-                <select id="filterCapacity" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
+                <select id="filterCapacity" onchange="renderContent(currentActiveFloor)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
                     <option value="all">Semua Kapasitas</option>
                     <option value="15">15 Orang</option>
                     <option value="30">30 Orang</option>
@@ -97,11 +97,11 @@
             </div>
             <div>
                 <label class="block text-[10px] md:text-[11px] font-semibold text-gray-500 uppercase mb-1">Tanggal</label>
-                <input type="date" id="filterDate" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
+                <input type="date" id="filterDate" onchange="renderContent(currentActiveFloor)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
             </div>
             <div>
                 <label class="block text-[10px] md:text-[11px] font-semibold text-gray-500 uppercase mb-1">Jam Rapat</label>
-                <select id="filterHour" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
+                <select id="filterHour" onchange="renderContent(currentActiveFloor)" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none">
                     <option value="all">Semua Slot Jam</option>
                     <option value="08:00">08:00 WIB</option>
                     <option value="09:00">09:00 WIB</option>
@@ -112,6 +112,7 @@
                     <option value="14:00">14:00 WIB</option>
                     <option value="15:00">15:00 WIB</option>
                     <option value="16:00">16:00 WIB</option>
+                    <option value="17:00">17:00 WIB</option>
                 </select>
             </div>
             <div class="flex items-end">
@@ -126,7 +127,7 @@
             <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-4 md:mb-6">
                 <div>
                     <h2 class="text-sm md:text-base font-bold text-esdmNavy">Jadwal Real-Time Ruang Rapat</h2>
-                    <p class="text-[11px] md:text-xs text-gray-500">Pemantauan ketersediaan slot jam secara langsung</p>
+                    <p id="matrixSubtitle" class="text-[11px] md:text-xs text-gray-500">Pemantauan ketersediaan slot jam secara langsung</p>
                 </div>
                 <div class="flex items-center gap-3 text-xs font-medium">
                     <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-emerald-500"></span> Tersedia</span>
@@ -136,11 +137,7 @@
 
             <div class="overflow-x-auto border border-gray-100 rounded-xl">
                 <table class="w-full text-center text-xs min-w-[650px]">
-                    <thead>
-                        <tr class="bg-gray-50 text-gray-400 font-semibold border-b border-gray-100">
-                            <th class="text-left py-3 px-4">Ruangan</th>
-                            <th class="py-3">08:00</th><th class="py-3">09:00</th><th class="py-3">10:00</th><th class="py-3">11:00</th><th class="py-3">12:00</th><th class="py-3">13:00</th><th class="py-3">14:00</th><th class="py-3">15:00</th><th class="py-3">16:00</th><th class="py-3">17:00</th>
-                        </tr>
+                    <thead id="matrixTableHead">
                     </thead>
                     <tbody id="matrixTableBody" class="divide-y divide-gray-50 font-medium">
                     </tbody>
@@ -150,7 +147,12 @@
 
         <!-- DAFTAR KARTU RUANGAN -->
         <div class="mb-12">
-            <h2 class="text-sm md:text-base font-bold text-esdmNavy mb-4">Daftar Ruang Rapat Tersedia</h2>
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-4">
+                <h2 id="cardsSectionTitle" class="text-sm md:text-base font-bold text-esdmNavy">Daftar Ruang Rapat Tersedia</h2>
+                <button id="resetFilterBtn" onclick="resetFilters()" class="hidden text-xs font-semibold text-esdmNavy hover:underline self-start sm:self-auto">
+                    <i class="fa-solid fa-rotate-left text-[10px] mr-1"></i> Reset Filter
+                </button>
+            </div>
             <div id="roomCardsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             </div>
         </div>
@@ -215,6 +217,16 @@
     </footer>
 
     <script>
+        const timeSlots = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
+
+        // Jadwal okupansi per ruangan agar filter slot jam realistis
+        const roomOccupiedMap = {
+            '4.1': ['09:00', '11:00', '15:00'],
+            '4.2': ['09:00', '11:00', '15:00'],
+            '5.1': ['08:00', '10:00', '14:00'],
+            '5.2': ['11:00', '13:00', '16:00']
+        };
+
         const defaultRoomsData = {
             lantai4: [
                 {
@@ -270,7 +282,6 @@
         let currentActiveFloor = 'lantai4';
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Set tanggal hari ini dan kunci tanggal lampau (disabled / abu-abu di date picker)
             const dateInput = document.getElementById('filterDate');
             if (dateInput) {
                 const today = new Date();
@@ -396,11 +407,49 @@
             renderContent(floor);
         }
 
+        function resetFilters() {
+            document.getElementById('filterCapacity').value = 'all';
+            document.getElementById('filterHour').value = 'all';
+            renderContent(currentActiveFloor);
+        }
+
         function renderContent(floor) {
+            const matrixHead = document.getElementById('matrixTableHead');
             const matrixContainer = document.getElementById('matrixTableBody');
             const cardsContainer = document.getElementById('roomCardsContainer');
+            const matrixSubtitle = document.getElementById('matrixSubtitle');
+            const cardsSectionTitle = document.getElementById('cardsSectionTitle');
+            const resetFilterBtn = document.getElementById('resetFilterBtn');
+
             const capFilter = document.getElementById('filterCapacity') ? document.getElementById('filterCapacity').value : 'all';
-            
+            const hourFilter = document.getElementById('filterHour') ? document.getElementById('filterHour').value : 'all';
+            const dateFilter = document.getElementById('filterDate') ? document.getElementById('filterDate').value : '';
+
+            // Tampilkan tombol Reset Filter jika ada filter aktif
+            if (capFilter !== 'all' || hourFilter !== 'all') {
+                resetFilterBtn.classList.remove('hidden');
+            } else {
+                resetFilterBtn.classList.add('hidden');
+            }
+
+            // Update subjudul sesuai filter yang dipilih
+            if (hourFilter !== 'all') {
+                matrixSubtitle.innerText = `Menampilkan status ketersediaan khusus pada pukul ${hourFilter} WIB (${dateFilter})`;
+                cardsSectionTitle.innerText = `Daftar Ruang Rapat Tersedia (${hourFilter} WIB)`;
+            } else {
+                matrixSubtitle.innerText = 'Pemantauan ketersediaan slot jam secara langsung';
+                cardsSectionTitle.innerText = 'Daftar Ruang Rapat Tersedia';
+            }
+
+            // Filter kolom header jam di matriks
+            const displayedSlots = hourFilter === 'all' ? timeSlots : [hourFilter];
+            matrixHead.innerHTML = `
+                <tr class="bg-gray-50 text-gray-400 font-semibold border-b border-gray-100">
+                    <th class="text-left py-3 px-4">Ruangan</th>
+                    ${displayedSlots.map(slot => `<th class="py-3 ${hourFilter !== 'all' ? 'text-esdmNavy font-bold bg-blue-50/60' : ''}">${slot}</th>`).join('')}
+                </tr>
+            `;
+
             matrixContainer.innerHTML = '';
             cardsContainer.innerHTML = '';
 
@@ -411,50 +460,87 @@
                 rooms = rooms.filter(r => r.capacity.includes(capFilter));
             }
 
+            let availableRoomCount = 0;
+
             rooms.forEach(room => {
+                const occupiedList = roomOccupiedMap[room.id] || ['09:00', '11:00', '15:00'];
+                const isAvailableAtSelectedHour = hourFilter === 'all' || !occupiedList.includes(hourFilter);
+
+                // Render baris di tabel Jadwal Real-Time
+                const slotsCellsHtml = displayedSlots.map(slot => {
+                    const isUsed = occupiedList.includes(slot);
+                    const highlightBg = hourFilter !== 'all' ? 'bg-blue-50/30' : '';
+                    return isUsed
+                        ? `<td class="${highlightBg}"><span class="px-2 py-0.5 rounded bg-red-50 text-red-700 font-semibold text-[9px]">DIPAKAI</span></td>`
+                        : `<td class="${highlightBg}"><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold text-[9px]">TERSEDIA</span></td>`;
+                }).join('');
+
                 matrixContainer.innerHTML += `
                     <tr>
                         <td class="text-left py-3 px-4 font-bold text-esdmNavy">${room.name}<br><span class="text-[10px] font-normal text-gray-400">Kapasitas: ${room.capacity}</span></td>
-                        <td><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold text-[9px]">TERSEDIA</span></td>
-                        <td><span class="px-2 py-0.5 rounded bg-red-50 text-red-700 font-semibold text-[9px]">DIPAKAI</span></td>
-                        <td><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold text-[9px]">TERSEDIA</span></td>
-                        <td><span class="px-2 py-0.5 rounded bg-red-50 text-red-700 font-semibold text-[9px]">DIPAKAI</span></td>
-                        <td><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold text-[9px]">TERSEDIA</span></td>
-                        <td><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold text-[9px]">TERSEDIA</span></td>
-                        <td><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold text-[9px]">TERSEDIA</span></td>
-                        <td><span class="px-2 py-0.5 rounded bg-red-50 text-red-700 font-semibold text-[9px]">DIPAKAI</span></td>
-                        <td><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold text-[9px]">TERSEDIA</span></td>
-                        <td><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold text-[9px]">TERSEDIA</span></td>
+                        ${slotsCellsHtml}
                     </tr>
                 `;
 
-                const facs = room.facilities || ['Touchscreen TV', 'Sound System', 'Air Purifier', 'Camera Conf'];
-                const facilitiesHtml = facs.map(fac => `
-                    <div><i class="fa-solid ${getFacilityIcon(fac)} text-gray-400 mr-1"></i> ${fac}</div>
-                `).join('');
+                // Render kartu ruangan hanya jika tersedia pada jam yang difilter
+                if (isAvailableAtSelectedHour) {
+                    availableRoomCount++;
+                    const facs = room.facilities || ['Touchscreen TV', 'Sound System', 'Air Purifier', 'Camera Conf'];
+                    const facilitiesHtml = facs.map(fac => `
+                        <div><i class="fa-solid ${getFacilityIcon(fac)} text-gray-400 mr-1"></i> ${fac}</div>
+                    `).join('');
 
-                const bookingUrl = `reservasi.html?id=${encodeURIComponent(room.id)}&floorKey=${encodeURIComponent(floor)}`;
+                    const bookingUrl = `reservasi.html?id=${encodeURIComponent(room.id)}&floorKey=${encodeURIComponent(floor)}`;
+                    const slotBadgeHtml = hourFilter !== 'all'
+                        ? `<span class="inline-block px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold mb-1.5">● Tersedia ${hourFilter} WIB</span>`
+                        : '';
 
-                cardsContainer.innerHTML += `
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow">
-                        <div>
-                            <img src="${room.img}" alt="${room.name}" class="w-full h-36 object-cover">
-                            <div class="p-4">
-                                <h3 class="font-bold text-esdmNavy text-sm mb-1">${room.name}</h3>
-                                <p class="text-xs text-gray-500 mb-3"><i class="fa-regular fa-user text-[10px]"></i> Kapasitas: ${room.capacity}</p>
-                                <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-600 mb-4">
-                                    ${facilitiesHtml}
+                    cardsContainer.innerHTML += `
+                        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col justify-between hover:shadow-md transition-shadow">
+                            <div>
+                                <img src="${room.img}" alt="${room.name}" class="w-full h-36 object-cover">
+                                <div class="p-4">
+                                    ${slotBadgeHtml}
+                                    <h3 class="font-bold text-esdmNavy text-sm mb-1">${room.name}</h3>
+                                    <p class="text-xs text-gray-500 mb-3"><i class="fa-regular fa-user text-[10px]"></i> Kapasitas: ${room.capacity}</p>
+                                    <div class="grid grid-cols-2 gap-2 text-[11px] text-gray-600 mb-4">
+                                        ${facilitiesHtml}
+                                    </div>
                                 </div>
                             </div>
+                            <div class="p-4 pt-0">
+                                <a href="${bookingUrl}" class="w-full bg-esdmYellow hover:bg-yellow-400 text-esdmNavy font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-colors shadow-sm">
+                                    Reservasi Ruangan <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </a>
+                            </div>
                         </div>
-                        <div class="p-4 pt-0">
-                            <a href="${bookingUrl}" class="w-full bg-esdmYellow hover:bg-yellow-400 text-esdmNavy font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-colors shadow-sm">
-                                Reservasi Ruangan <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                            </a>
-                        </div>
+                    `;
+                }
+            });
+
+            // Jika tidak ada ruangan yang cocok dengan filter
+            if (rooms.length === 0) {
+                matrixContainer.innerHTML = `
+                    <tr>
+                        <td colspan="${displayedSlots.length + 1}" class="py-6 text-center text-gray-400 text-xs">
+                            Tidak ada ruangan dengan kapasitas tersebut di lantai ini.
+                        </td>
+                    </tr>
+                `;
+            }
+
+            if (availableRoomCount === 0) {
+                cardsContainer.innerHTML = `
+                    <div class="col-span-full bg-white rounded-2xl p-8 text-center border border-gray-100 shadow-sm">
+                        <i class="fa-regular fa-calendar-xmark text-3xl text-gray-300 mb-2"></i>
+                        <p class="text-sm font-bold text-esdmNavy">Tidak Ada Ruangan Tersedia</p>
+                        <p class="text-xs text-gray-500 mt-1">Seluruh ruangan pada filter kapasitas/jam yang dipilih sedang dipakai. Silakan pilih slot jam atau lantai lain.</p>
+                        <button onclick="resetFilters()" class="mt-4 px-4 py-2 rounded-xl bg-esdmNavy text-white text-xs font-semibold hover:bg-blue-900 transition-colors">
+                            Tampilkan Semua Ruangan
+                        </button>
                     </div>
                 `;
-            });
+            }
         }
 
         function renderAnalytics(role) {
